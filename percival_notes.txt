@@ -13,14 +13,14 @@ happens to be oceanography and the primary sample axis is time.
 The extensions merit a quick sketch, and by extensions I mean 'things we do along the
 way that have potential value to data scientists'.  These are delineated in the 
 following list. The motivations and backstories for these elements are easily found
-on the web.
+on the web. * means 'planned' and . means 'is working'
 
-* Document building a Python Solution in Visual Studio
-* Break this Solution down as a set of Projects (apps) with various illustrative purposes
+. Document building a Python Solution in Visual Studio
+. Break this Solution down as a set of Projects (apps) with various illustrative purposes
 ** Use matplotlib to create a graphical representation of grid cells
 ** Use classes for a text adventure game
 ** Use I/O and lists to harmonize oceanographic data for further analysis
-* Use github for source control in VS from the outset
+. Use github for source control in VS from the outset
 * Produce a harmonized dataset suitable for statistical analysis
 * Describe a clustering approach to this data analysis nominally with K-Means
 * Compare a couple of Python approaches to clustering
@@ -58,12 +58,23 @@ making the machinery second nature, in turn avoiding the dreaded vapor lock.
 
 The second important admonition also concerns vapor lock. The reader is encouraged 
 to think of the search bar in the browser as a genii who can answer all one's questions
-provided they are posed appropriately. Examples of this are given below, both pro and con. 
+provided they are posed appropriately. Examples of this are given below, both pro and con.
+
+The third important time-saving remark concerns Git repositories. I happened to use a basic
+github account but made a mistake in synchronizing my local Project/Solution with the remote
+server. So I got stuck in VS and tried to break free to no avail. Eventually I found a website with
+good steps to follow and I re-created the entire Solution with careful copying from the original.
+And I made a new repository at Github.com. And eventually restored everything with Github backing
+up my local copy as intended. So the point is that this was a pain. Therefore: 
+
+1. Find a site like http://michaelcrump.net/setting-up-github-to-work-with-visual-studio-2013-step-by-step/
+before you start clicking and guessing and follow it to the letter. 
+2. Try to get the synch machinery in place *before* you actually start writing code. First check the 
+'I can synch' box before you synch the 'off and developing' box.
 
 
 
 == Narrative ==
-
 
 I began as noted by installing Vim, the text editor. Unfortunately it was almost 
 impossible to use so I tried searching on 'How do I prevent vim from wrapping text?'
@@ -132,11 +143,17 @@ game and goes from room to room one goes deeper and deeper into subroutines. I t
 
 == Github repository intermezzo ==
 
-My initial try at Commit... worked; but Synch did not. Maybe my repository at github.com
-was improperly configured. I deleted it and then eventually discovered that there is something
+My initial try at Commit... worked; but Synch did not. Most likely I used an impropoer
+URL for my Repository name. I deleted that at Github and then eventually discovered that 
+part of the issue may have been incorrect credentials. It turns out that there is something
 called a Credential Manager in Windows that stores login information. Therein are both 
-Windows Credentials and Web Credentials. I deleted the latter, changed the password on the
-former...  
+Windows Credentials and Web Credentials. I deleted these, made sure my password and username
+were noted down correctly, and eventually found this website: 
+
+http://michaelcrump.net/setting-up-github-to-work-with-visual-studio-2013-step-by-step/
+
+I followed the procedure given by Mr. Crump and now I can commit new code and synch with
+github.com/robfatland so everything seems to be under control. 
 
 
 == Kilroy ==
