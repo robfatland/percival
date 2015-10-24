@@ -67,10 +67,17 @@ good steps to follow and I re-created the entire Solution with careful copying f
 And I made a new repository at Github.com. And eventually restored everything with Github backing
 up my local copy as intended. So the point is that this was a pain. Therefore: 
 
-1. Find a site like http://michaelcrump.net/setting-up-github-to-work-with-visual-studio-2013-step-by-step/
-before you start clicking and guessing and follow it to the letter. 
-2. Try to get the synch machinery in place *before* you actually start writing code. First check the 
-'I can synch' box before you synch the 'off and developing' box.
+1. Find a site like 
+
+http://michaelcrump.net/setting-up-github-to-work-with-visual-studio-2013-step-by-step/
+
+before you start clicking and guessing. Following a guide carefully can be very effective.
+
+2. Get the synch in place first *before* you write any code. 'Synch' means that you have
+a remote repository that your development work synchs with periodically when you do code
+commits. I had problems; so I recommend that you check the 'I can synch' box before you 
+check the 'I'm off and developing' box; even if this means starting up an empty project 
+and synching it and then importing existing code.
 
 
 
@@ -153,8 +160,33 @@ were noted down correctly, and eventually found this website:
 http://michaelcrump.net/setting-up-github-to-work-with-visual-studio-2013-step-by-step/
 
 I followed the procedure given by Mr. Crump and now I can commit new code and synch with
-github.com/robfatland so everything seems to be under control. 
+github.com/robfatland so everything seems to be under source control. Here is a synopsis:
 
+1. VS: Create a new Project in Visual Studio
+	- Do this with source control Git selected
+2. Browser: Go to Github and do three things: 
+    - Make sure you know your login name, email address and password
+	- Create a new empty repository with a name that matches your Project
+	- Copy the URL of this new repository (under Set up in Desktop: http/ssh)
+3. VS: Team Explorer: Home > Unsynced Commits: Publish
+	- Paste the URL from Step 2
+	- Click Publish and authenticate if necessary
+		. The origin remote has been added and the current branch has been published
+	- Click Sync button
+		. Successfully synchronized incoming and outgoing commits.
+4. VS: Team Explorer: Home > Changes > Commit (with comment)
+	- Add a comment, click Commit button
+		. Commit NNNNNNN created locally. <Sync> to share your changes with the server.
+	- Click on that <Sync> link
+	- Click on the Sync button on the ensuing 'Unsynced Commits' panel
+5. Browser: Visit your Project/Solution and verify that all the files are there
+
+Making subsequent updates will be easy now.
+
+1. VS: Solution Explorer: red check marks appear by files you change.
+2. VS: Team Explorer: Home > Changes > Enter comment, Commit, Sync link, Sync button
+3. Browser: Github: Check repo for change reflected
+		
 
 == Kilroy ==
 
