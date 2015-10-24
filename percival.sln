@@ -5,6 +5,17 @@ VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "percival", "percival\percival.pyproj", "{BA17BA8B-A311-4A9F-BE0B-0AB67909C50F}"
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "charm", "charm\charm.pyproj", "{B586136E-C0AC-4900-9867-C82D3C7DAA46}"
+EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "knights", "knights\knights.pyproj", "{4DFAA46E-AE49-42BD-AA02-F69CE12A8591}"
+EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "castle", "castle\castle.pyproj", "{F6576013-AD1B-40AA-8967-A02D0E764E98}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5A695301-8DDE-42DF-BB1C-0F308F94AFF6}"
+	ProjectSection(SolutionItems) = preProject
+		percival_notes.txt = percival_notes.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +24,12 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{BA17BA8B-A311-4A9F-BE0B-0AB67909C50F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BA17BA8B-A311-4A9F-BE0B-0AB67909C50F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B586136E-C0AC-4900-9867-C82D3C7DAA46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B586136E-C0AC-4900-9867-C82D3C7DAA46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DFAA46E-AE49-42BD-AA02-F69CE12A8591}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DFAA46E-AE49-42BD-AA02-F69CE12A8591}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6576013-AD1B-40AA-8967-A02D0E764E98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6576013-AD1B-40AA-8967-A02D0E764E98}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,155 @@
+Visual Studio Python projects with Github
+Rob Fatland
+10/21/2015
+University of Washington
+
+== Summary ==
+
+This document goes through my process of creating a Python Solution / Project for 
+some elementary data analysis on two related but disjoint data files; with extensions
+of this simple idea where the extensions become the 'point' of the effort. The subject
+happens to be oceanography and the primary sample axis is time.
+
+The extensions merit a quick sketch, and by extensions I mean 'things we do along the
+way that have potential value to data scientists'.  These are delineated in the 
+following list. The motivations and backstories for these elements are easily found
+on the web.
+
+* Document building a Python Solution in Visual Studio
+* Break this Solution down as a set of Projects (apps) with various illustrative purposes
+** Use matplotlib to create a graphical representation of grid cells
+** Use classes for a text adventure game
+** Use I/O and lists to harmonize oceanographic data for further analysis
+* Use github for source control in VS from the outset
+* Produce a harmonized dataset suitable for statistical analysis
+* Describe a clustering approach to this data analysis nominally with K-Means
+* Compare a couple of Python approaches to clustering
+* Create a free Azure account and push data to blob storage
+* Import data from blob storage to Azure Machine Learning Studio (AMLS)
+* Run K-Means against the data in AMLS
+* Do the same cloud exercise in AWS
+* Evaluate costing for Azure and AWS solutions
+* Discover a domain/community data brokerage: We will 'discover' CINERGI
+* Based on cloud features: Create two edge data resources 
+* Register the data resources at CINERGI as EarthCube assets
+
+
+== Considerations == 
+
+The one convention used in the code and here is to flag trouble spots, concerns and open questions 
+with the flag word 'Kilroy'. Kilroy may also be spelled kilroy.
+
+This file was written using the Vim text editor. It took a little work to get the font and 
+the wrapping and so forth reasonable; but it is very old-school and I happen to be very old.
+
+I created a new Solution in Visual Studio called 'knight'. This will eventually be an 
+umbrella for several VS Projects which amount to applications or programs.  Before starting 
+on the oceanography Solution I will go through some simpler exercises to touch on the
+basics.  I build a simple Solution called 'knight' which solves a problem posed on a chess 
+board, the 'knights tour'. The problem illustrates the difference between brute force problem 
+solving and moving things along a little bit of a heuristic; so it is a little more interesting
+than 'hello world'. 
+
+Probably one of the most important things I can emphasize from the outset is that as a 
+tutorial this should be thought of as Infinite Time. That is: The reader is encouraged 
+to not try and follow these steps quickly; but rather to spend time playing with menus, 
+alternatives, generally coloring outside the lines. This will pay dividends in eventually
+making the machinery second nature, in turn avoiding the dreaded vapor lock. 
+
+The second important admonition also concerns vapor lock. The reader is encouraged 
+to think of the search bar in the browser as a genii who can answer all one's questions
+provided they are posed appropriately. Examples of this are given below, both pro and con. 
+
+
+
+== Narrative ==
+
+
+I began as noted by installing Vim, the text editor. Unfortunately it was almost 
+impossible to use so I tried searching on 'How do I prevent vim from wrapping text?'
+and was directed to a bunch of 'under the hood' business about vimrc files. The 
+right solution is simply to use the Edit drop-down menu to modify settings within
+Vim; but these are NOT dutifully recorded for subsequent sessions. There are
+three changes I would like to keep: 
+
+ * set nowrap
+ * color scheme Elflord
+ * font = Courier New 14 bold
+
+I tried un-pinning the Vim icon from the task bar and re-pinning this modified
+version...   No luck... Kilroy was here.
+
+I next installed Visual Studio 2013 and Python Tools for Visual Studio.  I
+will still need to install the Azure toolkit when I want this work to migrate 
+off into the cloud. 
+
+I added my new Solution 'knight' to source control and specified github on
+creation. I was informed that this created a github repository in my source
+folder: VS2013/Projects/knight. Sure enough this exists and contains two files
+.gitattributes and .gitignore. 
+
+In the knight Solution folder is a knight Project folder; wherein I find both
+knight.py and knight.pyproj. 
+
+I notice that the Solution Explorer window is going to help me configure a
+virtual python environment underneath my Project 'knight'. By default this is
+Python 64 bit 2.7 but I happen to have installed Anaconda so I'd like to know
+how to swap that in. Right-click gives me an Add/Remove option; but here I do
+not see Anaconda listed. On the positive side the default environment -- when
+expanded -- lists out a lot of standard Python libraries including my short
+list of 'pandas / matplotlib / numpy / scipy' so I could certainly get by with
+that. But let's pursue the swap-in-Anaconda for completeness. 
+
+http://docs.continuum.io/anaconda/ide_integration is my search result of value
+(SROV). It suggests Tools > Python Tools > Python Environments > (+ Custom) is
+the daisy chain for adding Anaconda.
+
+== Documentation Intermezzo ==
+
+I'd decide that this document, the text you are reading, should be included in 
+the Solution; so I relocate the file into the Solution-level (top) folder. That is: 
+Not into the knight Project folder since it applies across the entire Solution. 
+I then go to VS Solution Explorer and right-click on the Solution 'knight' up at the 
+top; select Add Existing... and select this documentation file. It is currently
+named 'VS_Python_Github_notes.txt'. Voila. Now it is part of the Solution and I 
+can avoid my battle with Vim and simply edit this in its own text window in Visual Studio.
+
+
+== Narrative 2 Adding Two More Projects ==
+
+Since my ultimate objective is to do a little data science I created a new Project
+called charm. This operates on oceanography data, specifically Flow Cytometry, and
+will harmonize it with cruise data collected while the research vessel is underway
+across the Pacific. Hence Cytometry HARMonization: 'charm'.
+
+Since my other objective is to get a little better handle on programming I created
+a second new Project called castle. This is a text adventure game where I will create
+a location class and some state information to instantiate a text adventure. I tried
+doing this earlier with the idea that each Room would be a method so as one plays the
+game and goes from room to room one goes deeper and deeper into subroutines. I thought
+'yeah that could work'. Let's do it using classes instead.
+
+
+== Github repository intermezzo ==
+
+My initial try at Commit... worked; but Synch did not. Maybe my repository at github.com
+was improperly configured. I deleted it and then eventually discovered that there is something
+called a Credential Manager in Windows that stores login information. Therein are both 
+Windows Credentials and Web Credentials. I deleted the latter, changed the password on the
+former...  
+
+
+== Kilroy ==
+
+* Cautionary note: Adding and removing files / Projects from a Solution is not an operation
+on files. It is an operation on the description of what files are in the Solution. When I 
+added this file to the Solution I did so after moving it to a good logical location. If I 
+then Remove it from the Solution the file will be unchanged. As another example: I wanted 
+to import the bulk of the 'charm.py' file from an earlier Project. To play it safe I added
+that version of the file to the Solution after I had created the charm Project. Hence there
+were two copies of charm.py: The one in the Project and the one listed at the top as a Solution
+Item. I copied the guts of the latter and pasted them into the former; then I Deleted the
+latter from the Solution. At no point were its contents modified. I then saved the Solution
+where now my 'charm.py' file in the charm Project is a copy of what I wanted. There are 
+other more expedient ways of doing this, I'm sure; but I wanted to outline this as the
+careful approach where one can be sure of what the end results are going to be. 
