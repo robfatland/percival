@@ -7,6 +7,7 @@ print rankList, fileList
 jumps = [(-2,-1),(-2, 1),(-1, 2),(1,2),(2,1),(2,-1),(1,-2),(-1,-2)]
 nJumps = len(jumps)
 board = []
+tour = []
 
 off = (-1, -1)
 
@@ -44,7 +45,7 @@ def Distance(a, b):
     return abs(a[0]-b[0]) + abs(a[1]-b[1])
 
 def FlippedDistance(distance):
-    return 6 - distance
+    return -distance
 
 # onboard returns a new jump location if it is on the board or (-1, -1) if not
 def OnBoard(s, j):
@@ -140,11 +141,32 @@ def MoveMinimalist(s):
     s.value = False
     return
 
+import numpy as np
+
 def SortOrder():
+    for s in board:
+        nd = len(s.destinations)
+        found = [0] * nd
+        for i in range(nd):
+            best = -1000
+            bestIdx = -1
+            for j in range(nd):
+                if found[j] == 0:
+                    thisFlipDist = board[LocToIdx(s.destinations[j])].flipdist
+                    if best < thisFlipDist:
+                        best = thisFlipDist
+                        bestIdx = j
+            s.order[i] = bestIdx
+            found[bestIdx] = 1
+
+
+        # An elegant thing would be to sort .order based on .flipdist
+        # This doesn't work: s.order.sort(key=board[LocToIdx(s.destinations[s.order[]])].flipdist)
+        # for d in range(len(s.destinations)):
+            # oh bugger
     return
 
 # This, believe it or not, is the actual program as such
 SortOrder()
-tour = []
 Move(board[0])
 
