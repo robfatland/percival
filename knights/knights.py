@@ -51,6 +51,11 @@
 #
 
 import sys          # used to halt the program
+import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
+
+
 
 # Define the chess board (as a square; but this is easily modified to rectangular boards)
 edge = 8
@@ -70,6 +75,10 @@ tour = []
 
 # off is a location that is not on the chessboard, for convenience
 off = (-1, -1)
+
+
+
+
 
 # The square class describes a given square on the chess board
 class square(object):
@@ -145,6 +154,36 @@ def PrintTour():
         index = tour[sq]
         print 'move ', sq + 1, ' --> file ', board[index].loc[0], ', rank ', board[index].loc[1]
     print "\n\n\n"
+
+    # Some fragmentary code to draw the chess board as a grid and so on
+    #display = np.ones((nFiles, nRanks)) * 0
+    #display[3, 7] = 2
+    #fig, ax = plt.subplots(1, 1, tight_layout=True)
+    #for x in range(nRanks + 1):
+    ##   ax.axhline(x, lw=2, color='black', zorder=5)
+    #for y in range(nFiles + 1):
+    #    ax.axvline(y, lw=2, color='black', zorder=5)
+    #my_cmap = matplotlib.colors.ListedColormap(['white', 'g', 'b'])
+    #ax.imshow(display, interpolation='none', cmap = my_cmap, extent=[0, nFiles, 0, nRanks], zorder=0)
+    #ax.axis('off')
+    #plt.show()
+
+    wait = raw_input("enter to see tour")
+    plt.axes([0,0,1,1])
+    size = 16
+    scaleX = 0.9 / (nFiles - 1.0)
+    scaleY = 0.9 / (nRanks - 1.0)
+    for sq in range(len(tour)):
+        index = tour[sq]
+        # print 'move ', sq + 1, ' --> file ', board[index].loc[0], ', rank ', board[index].loc[1]
+        text = str(sq + 1)
+        x = 0.05 + scaleX * board[index].loc[0]
+        y = 0.05 + scaleY * board[index].loc[1]
+        plt.text(x, y, text, ha='center', va='center', color="#000000", alpha=1.0, transform=plt.gca().transAxes, fontsize=size, clip_on=True)
+    plt.xticks([])
+    plt.yticks([])
+    plt.show()
+    wait = raw_input("enter to halt")
     sys.exit(0)
 
 def LocToIdx(s): return s[0]*nRanks + s[1]
