@@ -207,6 +207,12 @@ I have also included two iPython notebooks in addition to this document as Solut
 
 Note that the iPython notebooks "open" at the Github repository but are not editable there. 
 
+
+== Django ==
+
+From VS: Added a Django project with a local install of Anaconda. Synched the DB and generated a 
+super user named root with pwd Oxygen + my age. 
+
 == Kilroy ==
 
 * Cautionary note: Adding and removing files / Projects from a Solution is not an operation
