@@ -13,9 +13,14 @@ Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "castle", "castle\castle.pyp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5A695301-8DDE-42DF-BB1C-0F308F94AFF6}"
 	ProjectSection(SolutionItems) = preProject
+		BDS.ipynb = BDS.ipynb
+		Boats.ipynb = Boats.ipynb
+		kilroy.png = kilroy.png
 		LiveOcean.ipynb = LiveOcean.ipynb
+		LiveOceanV2.ipynb = LiveOceanV2.ipynb
 		LWDS Paper.ipynb = LWDS Paper.ipynb
 		percival_notes.txt = percival_notes.txt
+		Robs Resource Notebook.ipynb = Robs Resource Notebook.ipynb
 	EndProjectSection
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "howto", "howto\howto.pyproj", "{B29EAE35-68D6-4797-A2BE-EB88DEB41717}"

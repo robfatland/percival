@@ -17,14 +17,17 @@ on the web. * means 'planned' and . means 'is working'
 
 . Document building a Python Solution in Visual Studio
 . Break this Solution down as a set of Projects (apps) with various illustrative purposes
-** Use matplotlib to create a graphical representation of grid cells
+.. Use matplotlib to create a graphical representation of grid cells and text on a plot
+.. Use a class to represent vertices in a graph (chessboard)
 ** Use classes for a text adventure game
 ** Use I/O and lists to harmonize oceanographic data for further analysis
 . Use github for source control in VS from the outset
+. Include iPython notebooks in the github repository and see how they work there
+** Open question: Can they be checked out / edited at github?
 * Produce a harmonized dataset suitable for statistical analysis
 * Describe a clustering approach to this data analysis nominally with K-Means
 * Compare a couple of Python approaches to clustering
-* Create a free Azure account and push data to blob storage
+* Create an Azure account and push data to blob storage
 * Import data from blob storage to Azure Machine Learning Studio (AMLS)
 * Run K-Means against the data in AMLS
 * Do the same cloud exercise in AWS
@@ -187,6 +190,22 @@ Making subsequent updates will be easy now.
 2. VS: Team Explorer: Home > Changes > Enter comment, Commit, Sync link, Sync button
 3. Browser: Github: Check repo for change reflected
 		
+== Narrative continues: A Python class and iPython notebooks ==
+
+Having established five Projects in the percival Solution umbrella I recap:
+
+* charm: Harmonize flow cytometry and cruise data
+* knights: Solve the knights tour problem
+* percival: a client for the LiveOcean API
+* howto: illustrative sandbox on how to do things
+* castle: text adventure game
+
+I have also included two iPython notebooks in addition to this document as Solution Items. 
+
+* LiveOcean.ipynb is a resource on talking to Live Ocean Server and a draft of a chapter on cloud computing.
+* LWDS.ipynb is concerned with Light Weight Data Systems. It is the draft of a paper.
+
+Note that the iPython notebooks "open" at the Github repository but are not editable there. 
 
 == Kilroy ==
 
