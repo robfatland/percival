@@ -1,117 +1,46 @@
-
+﻿
 from location import *
 from util import *
 
-# room Laundry('Laundry','A place where clothes are not washed.', [True, True, True])
+entrance = location('entrance', 'the front entrance to the cold stone creepy castle', 1) 
+foyer = room('foyer', 'the small chamber past the front entrance', 1)
+library = room('library', 'a room full of mysterious books and a fireplace', 1)
+ledge = location('ledge', 'a ledge outside the library window near a drainpipe', 1)
+drainpipe = location('drainpipe', 'a vertical pipe from the ledge up to the roof', 1)
+battlements = location('battlements', 'the broad roof of the castle with a parapet', 1)
+trebuchet = location('trebuchet', 'a trebuchet with several large stones stacked nearby', 1)
+wall = location('wall', 'a wall between the battlements and the large tower', 1)
+tower = room('tower', 'the highest tower of the castle', 1)
+belfry = room('belfry', 'the room at the top of the tower', 1)
+dumbwaiter = location('dumbwaiter', 'a hand-operated elevator the size of a suitcase', 1)
+pantry = room('pantry', 'a place where squash is stored prior to over-cooking', 1)
+scullery = room('scullery', 'many sinks and scrubbers for making dishes clean', 1)
+kitchen = room('kitchen', 'a place where squash is over-cooked', 1.0)
+laundry = room('laundry','a place where clothes are not washed very well', 1.0)
+coalscuttle = room('coal scuttle','little more than a large bin with a few chunks of coal down in one corner', 1.0)
+dining = room('dining room', 'a large room with an enormous table', 1)
+lodgings = location('lodgins', 'a series of bedrooms and hallways; nothing very interesting, very dark', 1)
+pens = location('pens', 'There is a pig here... It appears to be made of oinkment', 1)
+garden
+hall
+ballroom
+alcove
+lab
+shop
+armory
+archeryrange
+forge
+loadingdock = room('loading dock', 'a kind of platform where macroinvertebrates abound', 1.0)
+cellar = room('cellar', 'filled with wine bottles and stacks of carpets', 1.0)
+dungeon = room('dungeon', 'filthy and filled with sounds: distant howls, screams, and rattling chains...', 1.0) 
 
-
-KitchenState1 = True
-KitchenState2 = True
-KitchenState3 = True
-
-BallroomState1 = True
-BallroomState2 = True
-BallroomState3 = True
-
-DiningState1 = True
-DiningState2 = True
-DiningState3 = True
-
-AlcoveState1 = True
-AlcoveState2 = True
-AlcoveState3 = True
-
-LabState1 = True
-LabState2 = True
-LabState3 = True
-
-ShopState1 = True
-ShopState2 = True
-ShopState3 = True
-
-ArmoryState1 = True
-ArmoryState2 = True
-ArmoryState3 = True
-
-RangeState1 = True
-RangeState2 = True
-RangeState3 = True
-
-SculleryState1 = True
-SculleryState2 = True
-SculleryState3 = True
-
-suggBallroomFalseFalseFalse = ['sugg', 'string', 'list']
-suggBallroomFalseFalseTrue  = ['sugg', 'string', 'list']
-suggBallroomFalseTrueFalse = ['sugg', 'string', 'list']
-suggBallroomFalseTrueTrue  = ['sugg', 'string', 'list']
-suggBallroomTrueFalseFalse = ['sugg', 'string', 'list']
-suggBallroomTrueFalseTrue  = ['sugg', 'string', 'list']
-suggBallroomTrueTrueFalse = ['sugg', 'string', 'list']
-suggBallroomTrueTrueTrue  = ['sugg', 'string', 'list']
-
-suggDiningFalseFalseFalse = ['sugg', 'string', 'list']
-suggDiningFalseFalseTrue  = ['sugg', 'string', 'list']
-suggDiningFalseTrueFalse = ['sugg', 'string', 'list']
-suggDiningFalseTrueTrue  = ['sugg', 'string', 'list']
-suggDiningTrueFalseFalse = ['sugg', 'string', 'list']
-suggDiningTrueFalseTrue  = ['sugg', 'string', 'list']
-suggDiningTrueTrueFalse = ['sugg', 'string', 'list']
-suggDiningTrueTrueTrue  = ['sugg', 'string', 'list']
-
-suggKitchenFalseFalseFalse = ['sugg', 'string', 'list']
-suggKitchenFalseFalseTrue  = ['sugg', 'string', 'list']
-suggKitchenFalseTrueFalse = ['sugg', 'string', 'list']
-suggKitchenFalseTrueTrue  = ['sugg', 'string', 'list']
-suggKitchenTrueFalseFalse = ['sugg', 'string', 'list']
-suggKitchenTrueFalseTrue  = ['sugg', 'string', 'list']
-suggKitchenTrueTrueFalse = ['sugg', 'string', 'list']
-suggKitchenTrueTrueTrue  = ['sugg', 'string', 'list']
-
-suggPantryFalseFalseFalse = ['sugg', 'string', 'list']
-suggPantryFalseFalseTrue  = ['sugg', 'string', 'list']
-suggPantryFalseTrueFalse = ['sugg', 'string', 'list']
-suggPantryFalseTrueTrue  = ['sugg', 'string', 'list']
-suggPantryTrueFalseFalse = ['sugg', 'string', 'list']
-suggPantryTrueFalseTrue  = ['sugg', 'string', 'list']
-suggPantryTrueTrueFalse = ['sugg', 'string', 'list']
-suggPantryTrueTrueTrue  = ['sugg', 'string', 'list']
-
-suggCellarFalseFalseFalse = ['sugg', 'string', 'list']
-suggCellarFalseFalseTrue  = ['sugg', 'string', 'list']
-suggCellarFalseTrueFalse = ['sugg', 'string', 'list']
-suggCellarFalseTrueTrue  = ['sugg', 'string', 'list']
-suggCellarTrueFalseFalse = ['sugg', 'string', 'list']
-suggCellarTrueFalseTrue  = ['sugg', 'string', 'list']
-suggCellarTrueTrueFalse = ['sugg', 'string', 'list']
-suggCellarTrueTrueTrue  = ['sugg', 'string', 'list']
-
-suggDungeonFalseFalseFalse = ['sugg', 'string', 'list']
-suggDungeonFalseFalseTrue  = ['sugg', 'string', 'list']
-suggDungeonFalseTrueFalse = ['sugg', 'string', 'list']
-suggDungeonFalseTrueTrue  = ['sugg', 'string', 'list']
-suggDungeonTrueFalseFalse = ['sugg', 'string', 'list']
-suggDungeonTrueFalseTrue  = ['sugg', 'string', 'list']
-suggDungeonTrueTrueFalse = ['sugg', 'string', 'list']
-suggDungeonTrueTrueTrue  = ['sugg', 'string', 'list']
-
-suggLoadingFalseFalseFalse = ['sugg', 'string', 'list']
-suggLoadingFalseFalseTrue  = ['sugg', 'string', 'list']
-suggLoadingFalseTrueFalse = ['sugg', 'string', 'list']
-suggLoadingFalseTrueTrue  = ['sugg', 'string', 'list']
-suggLoadingTrueFalseFalse = ['sugg', 'string', 'list']
-suggLoadingTrueFalseTrue  = ['sugg', 'string', 'list']
-suggLoadingTrueTrueFalse = ['sugg', 'string', 'list']
-suggLoadingTrueTrueTrue  = ['sugg', 'string', 'list']
 
 
 # Kitchen 
 def Kitchen():
 
-    global KitchenState1
-    global KitchenState2
-    global KitchenState3
 
+    
     while True:
         if KitchenState1:
             if KitchenState2:

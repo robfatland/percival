@@ -1,4 +1,4 @@
-# Knight Tour
+ï»¿# Knight Tour
 # 
 # An 8 x 8 chess board is empty save for a lone knight on one corner. Can the knight make
 #   63 moves and visit each remaining square of the board once?
@@ -10,7 +10,7 @@
 # 
 # Wikipedia has a nice article that includes generalizations to other rectangular boards:
 # 
-# "Schwenk proved that for any m × n board with m ? n, a closed knight's tour is always possible unless 
+# "Schwenk proved that for any m ï¿½ n board with m ? n, a closed knight's tour is always possible unless 
 #   one or more of these three conditions are met:
 #     1. m and n are both odd
 #     2. m = 1, 2, or 4

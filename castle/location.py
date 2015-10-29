@@ -2,7 +2,8 @@
     """A location is a place you can be in the course of running the adventure.
     Locations include states, descriptions, possible actions (that change states)
     and even suggestions for what to do."""
-    state = [True, True, True, True, True]
+    state = [False, False, False, False, False]
+    adjacent = []
 
     def __init__(self, name, description, value):
         self.name = name
