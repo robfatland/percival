@@ -1,4 +1,4 @@
-import matplotlib
+﻿import matplotlib
 from matplotlib import pyplot
 
 import numpy as np
@@ -7,7 +7,9 @@ import sys
 import csv
 from datetime import datetime
 
-
+import os
+from os import listdir
+from os.path import isfile, join
 
 ####
 ####
@@ -42,13 +44,13 @@ from datetime import datetime
 ####
 
 rootdir = "C:\\Users\\fatla_000\\Documents\\"
-datadir = "Data\\UW Oceanography\\Sophie\\"
-fullpathdir = rootdir + datadir
+datadir = "Data\\"
+domaindir = "UW Oceanography\\Sophie\\"
+fullpathdir = rootdir + datadir + domaindir
 underwayFile = 'Tokyo3_sds_complete.csv'
 flowcyFile = 'armbrustlab_seaflow_phyto_adj_tokyo3.csv'
 harmFile = 'harm.csv'
 histogramFile = 'histogram.csv'
-
 
 ##########################
 #######
@@ -135,19 +137,8 @@ print 'well that was easy; here is a:'
 print a
 print b
 
-# string decomposition into a datetime object
-def convertStringToDatetime(s):
-    # Example s from Underway: '9/20/2011 9:20:00 AM\n'
-    q = s.split(' ')
-    ymd = q[0].split('/')
-    hms = q[1].split(':')
-    year = int(ymd[2])
-    month = int(ymd[0])
-    day = int(ymd[1])
-    hour = int(hms[0])
-    minute = int(hms[1])
-    second = int(hms[2])
-    return datetime(year, month, day, hour, minute, second)
+
+
 
 # Disabled header printouts:
 #
