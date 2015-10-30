@@ -1,4 +1,4 @@
-import numpy as np
+﻿import numpy as np
 import scipy
 import sys
 import csv
@@ -7,15 +7,15 @@ import os
 from os import listdir
 from os.path import isfile, join
 
-#### This program sorts out some VIC output into files suitable for import into WWT
+#### This program sorts out some VIC output into files suitable for import into WWT 
 
-# To do: 1999 for four year so skip 365 * 49 rows
-# Color
-# Eliminate 2 of 3 values in rows to make files smaller
-# substitute MULTIPOLYGON
+################
+#
+# Generic Methods for file I/O
 # 
+################
 
-# Write a list to a file based on that list's length: Write as CSV
+# Write a CSV row to a file from a passed list
 def WriteJaggedRowCSV(row, file):
     # row is a list  
     rowLen = len(row)
@@ -39,32 +39,63 @@ def WriteCSVFile(file, longlist, entries_per_row, header):
         WriteJaggedRowCSV(longlist[start:end], f)
     f.close()
 
-# Write a very long list as a sequence of rows in a CSV file: open and shut but using GEOMETRY / MULTILINESTRING
-def WriteCSVFileWithGEOMETRY(file, longlist, entries_per_row, header, dlon, dlat):
-    numRows = len(longlist) / entries_per_row
-    if numRows * entries_per_row != len(longlist):
-        print "The long list does not parse evenly into expected entries per row!!!"
-        sys.exit(0)
-    f = open(file, 'w')
-    f.write(header + '\n')
-    for i in range(numRows):
-        start = i * entries_per_row
-        a0 = str(longlist[start] - dlon2)
-        a1 = str(longlist[start] + dlon2)
-        b0 = str(longlist[start + 1] - dlat2)
-        b1 = str(longlist[start + 1] + dlat2)
-        geomEntry = 'MULTILINESTRING((' + a0 + ' ' + b0 + ',' + a0 + ' ' + b1 + ','
-        geomEntry += a1 + ' ' + b1 + ',' + a1 + ' ' + b0 + ',' + a0 + ' ' + b0 + ')),'
-        f.write(geomEntry)
-        f.write(str(longlist[start + 2]) + ',')
-        f.write(str(longlist[start + 3]) + ',')
-        f.write(str(longlist[start + 4]) + ',')
-        f.write(str(longlist[start + 5]) + '\n')
-    f.close()
-
 # Generate a datetime from just year, month and day (integers)
 def convertYMDToDatetime(y, m, d):
     return datetime(y, m, d, 0, 0, 0)
+
+
+########################
+#
+# Custom method for file I/O
+#
+########################
+
+# Write a long list as a sequence of rows to a CSV file: customized for WWT with GEOMETRY / MULTIPOLYGON WKT
+def WriteCSVFileWithGEOMETRY(file, longlist, header, lonScale, latScale):
+    # expect header to be GEOMETRY date altitude color for a total of five values
+    entries_per_row = 5
+
+    # How many rows we expect to write to the output file
+    numRows = len(longlist) / entries_per_row
+
+    # Check that the list length jives with the assumptions
+    if numRows * entries_per_row != len(longlist):
+        print "The long list does not parse evenly into expected entries per row!!!"
+        sys.exit(0)
+
+    # Take care of the top of the file
+    f = open(file, 'w')
+    f.write(header + '\n')
+
+    # loop over the rows of the output file
+    for i in range(numRows):
+
+        # start is the index of this row's elements in the list
+        start = i * entries_per_row
+
+        # a/b are lon/lat corner coordinates
+        a0 = str(longlist[start] - lonScale)
+        a1 = str(longlist[start] + lonScale)
+        b0 = str(longlist[start + 1] - latScale)
+        b1 = str(longlist[start + 1] + latScale)
+
+        geomEntry = 'MULTIPOLYGON((' + a0 + ' ' + b0 + ',' + a0 + ' ' + b1 + ','
+        geomEntry += a1 + ' ' + b1 + ',' + a1 + ' ' + b0 + ',' + a0 + ' ' + b0 + ')),'
+
+        f.write(geomEntry)
+        f.write(str(longlist[start + 2]) + ',')
+        f.write(str(longlist[start + 3]) + ',')
+        f.write(str(longlist[start + 4]) + '\n')
+
+    # and that's it
+    f.close()
+
+##############################
+#
+# Configure the vicsort parameters
+#
+##############################
+
 
 # path information
 rootdir = "C:\\Users\\fatla_000\\Documents\\"
@@ -80,15 +111,39 @@ lat = []
 lon = []
 rows = []
 
+# geographic grid spacing
 dlat = 0.08
 dlon = 0.08
+
+# half that spacing
 dlat2 = dlat / 2.0
 dlon2 = dlon / 2.0
-outCounter = 0
 
+# modifying factor for artistic license
+latMag = 1.5
+lonMag = 1.5
+
+dlatScale = dlat2*latMag
+dlonScale = dlon2*lonMag
+
+outCounter = 0
+yearsSkip = 49
+yearsGet = 1
+linesSkip = int(yearsSkip * 365.25)
+linesGet = int(yearsGet*365.25)
+linesDaySkip = 2
+linesDaysBlock = 1 + linesDaySkip
+readIterations = linesGet / linesDaysBlock
+
+# These values are used to produce interesting altitude/color from data
 a3 = 1000.0
 a4 = 10000.0
 a5 = 10000.0
+pedestal = 6000.0
+colors = ['red','orange','green','cyan','blue','white']
+nColors = len(colors)
+colorDC = pedestal
+colorScale = 3000.0
 
 # create a list of files that begin with 'qualifier' which is 'fluxes'
 for a in all:
@@ -109,28 +164,27 @@ for a in flux:
 
 for i in range(len(flux)):
     thisFile = open(join(fullpathdir, flux[i]))
-    while True:
+    for j in range(linesSkip):
+        thisFile.readline()
+    for j in range(readIterations):
+        for k in range(linesDaySkip): thisFile.readline()
         line = thisFile.readline()
         if line == '': break
         a = line.split(',')
-        rows.extend([lon[i], lat[i], datetime(int(a[0]), int(a[1]), int(a[2])), float(a[3])*a3, float(a[4])*a4, float(a[5])*a5])
-
+        altValue = pedestal + float(a[3])*a3
+        colorIndex = int((altValue - colorDC) / colorScale)
+        if colorIndex < 0: colorIndex = 0
+        if colorIndex >= nColors: colorIndex = nColors - 1
+        rows.extend([lon[i], lat[i], datetime(int(a[0]), int(a[1]), int(a[2])), altValue, colors[colorIndex]])
     print "  ...did file " + flux[i]
-
-    if len(rows) > 7200000:      # divide by six to get actual number of rows: 200k
+    
+    if len(rows) > 7200000 or i == len(flux)-1:      # divide by five to get actual number of rows
         if outCounter < 10: extension = '0' + str(outCounter)
         else: extension = str(outCounter)
         outCounter += 1
         outName = fullpathdir + 'out' + extension + '.csv'
-        WriteCSVFileWithGEOMETRY(outName, rows, 6, "GEOMETRY,date,alt0,alt1,alt2", dlon, dlat)
+        WriteCSVFileWithGEOMETRY(outName, rows, "GEOMETRY,date,alt0,color", dlonScale, dlatScale)
         rows = []
         print '..........wrote file ' + str(outCounter)
 
-        if outCounter == 2: sys.exit(0)
-
-# print fluxfiles
-# print listdir(fullpathdir2)
-print 'kilroy'
-a = raw_input()
-sys.exit(0)
 
