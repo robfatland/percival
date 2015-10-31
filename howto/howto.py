@@ -1,4 +1,4 @@
-# The top block 1 drops some random equations on top of one another, kinda artistic
+﻿# The top block 1 drops some random equations on top of one another, kinda artistic
 
 import numpy as np
 import matplotlib
@@ -84,3 +84,36 @@ plt.show()
 ## turn off the axis labels
 #ax.axis('off')
 #plt.show()
+
+
+
+
+##################
+###
+### Block 3 basic I/O regarding CSV files
+###
+##################
+
+
+# Write a CSV row to a file from a short list
+def WriteJaggedRowCSV(row, file):
+    # row is a list  
+    rowLen = len(row)
+    for q in range(rowLen - 1):
+        file.write(str(row[q]) + ',')    # CSV row
+    file.write(str(row[rowLen - 1]) + '\n')     # last line no comma
+
+# Write a very long list as a sequence of rows in a CSV file: open and shut
+def WriteCSVFile(file, longlist, entries_per_row, header):
+    numRows = len(longlist) / entries_per_row
+    if numRows * entries_per_row != len(longlist):
+        print "The long list does not parse evenly into expected entries per row!!!"
+        sys.exit(0)
+    f = open(file, 'w')
+    f.write(header)
+    f.write('\n')
+    for i in range(numRows):
+        start = i * entries_per_row
+        end = start + entries_per_row
+        WriteJaggedRowCSV(longlist[start:end], f)
+    f.close()
