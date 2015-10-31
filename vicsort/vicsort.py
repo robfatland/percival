@@ -1,4 +1,5 @@
 ﻿import sys
+from numpy import isnan
 from datetime import datetime
 from os import listdir
 from os.path import isfile, join
@@ -6,11 +7,44 @@ from os.path import isfile, join
 #
 # This program sorts out some VIC output into files suitable for import into WWT 
 # In WWT you would set Look At = Earth, open the Layer Manager, right click, select Add, open the CSV file...
+#   ...and there will be a pause of maybe 30 seconds while the data loads; talking about 590k values with typical parameters.
 # From there you'll need to make some adjustments to the imported layer:
 #   Select the new layer and click 'Time Series' so it knows it is time-enabled
 #   Set the Properties to include a nice time delay value like 8 or 16 days
 #   Right-click the layer and set the opacity to very faint to see the underlying terrain
 #
+# kilroy here are a few items that could be managed better:
+#   - by adding a lat and lon column to the output you can switch between column and marker representation;
+#     in fact WWT allows you to have both on: Think column with beacon at the top for starters. 
+#     This could facilitate comparison of two types, e.g. precip and evap. Also important would be a 
+#     lat/lon-only (no GEOMETRY) option.
+#   - drawing polygons CW versus CCW can have different effects...
+#   - other approaches to dual-data include basing alt and color on different columns and creating pairs of indicators in each
+#     cell (splitting the real estate) so that your eye could possibly pick up on the two effective surfaces.
+#   - solid color (no altitude coding) would also give a simpler way of comparing two types. This is a ball of worms
+#     but one approach is to make a reference color list and then choose a range in that list for a particular run
+#     where you have to take care to get the indexing / thresholding adjusting properly
+#   - give the program some command line arguments
+#   - pedestal should really be way high up for evap since it is + and -
+
+# command line arguments; pulled up from 'buried in the code'
+# Data grab will commence on calendar year (1950 + yearsSkip)
+yearsSkip = 7
+# we read every (linesDaySkip + 1)'th day of data and skip the remainder
+linesDaySkip = 2
+# This code only gets a year or two of data
+yearsGet = 5
+# place the data on a pedestal to get it up above most of the topography (6000 meters)
+pedestal = 6000.0
+# choose precip = 3, evap = 4, runoff = 5, baseflow = 6
+dataTypeIndex = 3
+# turn this on (True) to drastically reduce number of polygons drawn
+drawOnlySignificantData = True
+# in the case where we don't want to draw "no precip" or "no runoff" or "no base flow" this threshold is used as the
+#   cutoff. It doesn't really make sense for evap; a different scheme would be wanted there (and a different pedestal)
+significanceThreshold = [0., 0., 0., 0.2, -10.0, 0.2, 0.01]
+pedestals = [0., 0., 0., 6000.0, 20000.0, 6000.0, 6000.0]
+
 
 ########################
 #
@@ -48,8 +82,8 @@ def WriteCSVFileWithGEOMETRY(file, longlist, header, dlonScale, dlatScale):
         b1 = str(longlist[start + 1] + dlatScale)
 
         # This is 'well known text' (WKT) and it draws a solid-color rectangle centered on the grid point
-        geomEntry = 'MULTIPOLYGON((' + a0 + ' ' + b0 + ',' + a0 + ' ' + b1 + ','
-        geomEntry += a1 + ' ' + b1 + ',' + a1 + ' ' + b0 + ',' + a0 + ' ' + b0 + ')),'
+        geomEntry = 'MULTIPOLYGON((' + a0 + ' ' + b0 + ',' + a1 + ' ' + b0 + ','
+        geomEntry += a1 + ' ' + b1 + ',' + a0 + ' ' + b1 + ',' + a0 + ' ' + b0 + ')),'
 
         f.write(geomEntry)
 
@@ -60,6 +94,14 @@ def WriteCSVFileWithGEOMETRY(file, longlist, header, dlonScale, dlatScale):
 
     # and that's it
     f.close()
+
+def extendRows(pedestal, value, dataTypeScale, colorDC, colorScale, nColors, lon, lat, year, month, day, colors, rows):
+    altValue = pedestal + value*dataTypeScale
+    colorIndex = int((altValue - colorDC) / colorScale)
+    if colorIndex < 0: colorIndex = 0
+    if colorIndex >= nColors: colorIndex = nColors - 1
+    rows.extend([lon, lat, datetime(year, month, day), altValue, colors[colorIndex]])
+
 
 ##############################
 #
@@ -97,8 +139,8 @@ dlat2 = dlat / 2.0
 dlon2 = dlon / 2.0
 
 # here is a little modifying factor for artistic license
-latMag = 1.5
-lonMag = 1.5
+latMag = 1.0
+lonMag = 1.0
 
 # These values are actually used to size the rectangular blocks
 dlatScale = dlat2*latMag
@@ -106,36 +148,28 @@ dlonScale = dlon2*lonMag
 
 # Data starts at 1950. This code does one year from 1950 to 2006 based on yearsSkip
 outCounter = 0
-yearsSkip = 7
-
-# This code only gets a year or two of data
-yearsGet = 1
 
 # bookkeeping
 linesSkip = int(yearsSkip * 365.25)
 linesGet = int(yearsGet*365.25)
 
 # This code only gets 1 in every (1 + linesDaySkip) days; typically 1 in 3
-linesDaySkip = 2
 linesDaysBlock = 1 + linesDaySkip
 readIterations = linesGet / linesDaysBlock
 
-# The output file retains "when" and "how long" for this data subset
-outfileBase = 'vicsort_' + str(1950 + yearsSkip) + '_' + str(yearsGet) + '_'
+# This part is a bit circuitous but it lets you select a data type fairly easily.
+# We are pulling data from the list a[]: Column 3, 4, 5, or 6 (indexing from 0) 
+# corresponding to precip / evap / runoff / base flow. So you have to choose one
+# of those four indices: 3, 4, 5 or 6 as 'dataTypeIndex'. Everything follows from
+# there but you may wish to modify the intrinsic scaling.
+dataTypeScaleList = [0., 0., 0., 1000.0, 100000.0, 1000.0, 10000.0]
+dataTypeNameList = ['year', 'month', 'day', 'precip', 'evap', 'runoff', 'baseflow']
+dataTypeScale = dataTypeScaleList[dataTypeIndex]
 
-# These values are used to produce interesting altitude/color from data
-# a3 is fourth column in the source: I forget what it is
-# a4 is fifth "
-# a5 is sixth "
-# a6 is seventh "
-# Only the a3 constant has been tested
-a3 = 1000.0
-a4 = 10000.0
-a5 = 10000.0
-a6 = 10000.0
+# The output file retains "type" (precip, runoff etc), "when" (year) and "how long" (in years) for this data subset
+# For example you could get vicsort_runoff_1964_2.csv which is data from 1964 and 1965 (2 years)
+outfileBase = 'vicsort_' + dataTypeNameList[dataTypeIndex] + '_' + str(1950 + yearsSkip) + '_' + str(yearsGet) + '_'
 
-# place the data on a pedestal to get it up above most of the topography (6000 meters)
-pedestal = 6000.0
 
 # the color coding is based on the data column of interest (a3/a4/a5) which becomes altitude
 # it *could* be done based on a different column than the altitude at the risk of being confusing
@@ -185,18 +219,15 @@ for i in range(len(flux)):
         # break this line up into seven values in the a[] list
         a = line.split(',')
 
-        # determine this altitude
-        altValue = pedestal + float(a[3])*a3
+        # determine this altitude, guarding for 'nan' data
+        value = float(a[dataTypeIndex])
+        if isnan(value): value = 0.0
 
-        # determine this color
-        colorIndex = int((altValue - colorDC) / colorScale)
-
-        # make sure it doesn't fall outside the possible index range for colors
-        if colorIndex < 0: colorIndex = 0
-        if colorIndex >= nColors: colorIndex = nColors - 1
-
-        # list.extend() appends several list elements
-        rows.extend([lon[i], lat[i], datetime(int(a[0]), int(a[1]), int(a[2])), altValue, colors[colorIndex]])
+        if drawOnlySignificantData:
+            if value > significanceThreshold[dataTypeIndex]:
+                extendRows(pedestal, value, dataTypeScale, colorDC, colorScale, nColors, lon[i], lat[i], int(a[0]), int(a[1]), int(a[2]), colors, rows)
+        else:
+            extendRows(pedestal, value, dataTypeScale, colorDC, colorScale, nColors, lon[i], lat[i], int(a[0]), int(a[1]), int(a[2]), colors, rows)
 
     # show a pulse
     print "  ...did file " + flux[i]
