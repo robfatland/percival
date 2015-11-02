@@ -1,4 +1,6 @@
-﻿import matplotlib
+﻿#### This program harmonizes the Flow Cytometry file (20GB) to the Underway file (.5MB)
+
+import matplotlib
 from matplotlib import pyplot
 
 import numpy as np
@@ -15,13 +17,18 @@ from os.path import isfile, join
 ####
 #### This program harmonizes the Flow Cytometry file (20GB) to the Underway file (.5MB)
 ####
-#### Not implemnted but in consideration:
-####   "Owing to memory limits this is done on a bit of an ad hoc basis; so I'll see if this plan doesn't
-####    work by tracking how many FC rows find no home owing to the Underway row has already been written to
-####    the output file, a condition called 'that ship has sailed'. Otherwise trying to keep everything in 
-####    memory might cause trouble."
+#### Jargon: Day-file is a native (tuple!) classification scheme used by both FC and Underway data files.
+####   The good news is that they are present in both; so FC rows can be binned into Underway rows.
+####   The bad news is that it is unclear if they are unique; so that gets our first kilroy.
 ####
-#### The FC rows are appended as decimal-truncated triples to the day-file corresponding Underway rows
+#### We want this program to run piecemeal because it would otherwise be a bit too memory intensive.
+#### Considerations:
+####   Does a prior results file exist? If so it should contain the number of FC rows processed
+####   How many FC rows find no home underway row?
+####   How many underway rows find no FC data? Negligible FC data? 
+####
+#### FC rows are appended as decimal-truncated triples to the day-file corresponding Underway rows
+####   This means that the rows are jagged and can be quite long. 
 ####
 #### Kilroy: Here are assumptions and things this program does not check
 ####   Assume the Day-File pairs in Underway are unique
@@ -46,11 +53,77 @@ from os.path import isfile, join
 rootdir = "C:\\Users\\fatla_000\\Documents\\"
 datadir = "Data\\"
 domaindir = "UW Oceanography\\Sophie\\"
-fullpathdir = rootdir + datadir + domaindir
-underwayFile = 'Tokyo3_sds_complete.csv'
-flowcyFile = 'armbrustlab_seaflow_phyto_adj_tokyo3.csv'
-harmFile = 'harm.csv'
-histogramFile = 'histogram.csv'
+path = rootdir + datadir + domaindir
+underwayFile = path + 'Tokyo3_sds_complete.csv'
+flowcyFile = path + 'armbrustlab_seaflow_phyto_adj_tokyo3.csv'
+progLabel = 'charmInProgress'
+progressBase = path + progLabel + '_'
+charmFile = path + 'charm.csv'
+histogramFile = path + 'charm_histogram.csv'
+
+
+# Get a list of all files in the folder
+all = [ f for f in listdir(path) if isfile(join(path,f)) ]
+
+# Get a list of all existing progress files
+prog = []
+for a in all:
+    b = a.split('_')
+    if b[0] == progLabel: prog.append(a)
+
+progressFileExists = True
+if len(prog) == 0: progressFileExists = False
+
+if progressFileExists:
+    # We want the prog file with the most lines in it
+    maxProgLines = -1
+    for p in prog:
+        p1 = p.split('_')
+        thisLines = int(p1[1])
+        if thisLines > maxProgLines:
+            maxProgLines = thisLines
+            faveProgFile = p1
+    print 'my fave progress file is ', p1
+else:
+    print 'no progress file found.'
+
+# Prep info on Underway file: The one I'm using is 1 header + 5727 rows of data, each a 3 minute window
+# Header and first data row:
+#   LAT, LON, file,       OCEAN.TEMP,         SALINITY,      day, BULK.RED,             timestamp
+#    NA,  NA,   45, 27.2468196969697, 33.4421954545454, 2011_262, 102.8189, 9/19/2011 10:57:00 PM
+#
+# This code counts the lines in the file:
+# fU = open(underwayFile)
+# underwayLines = 0
+# while True:
+#     a = fU.readline()
+#     if a == "": break
+#     underwayLines += 1
+# fU.close()
+# print 'counted ', underwayLines, ' lines in the underway file'
+
+
+# Header and first data row: fsc = forward scatter, chl = chlorophyll, pe = phycoerythrin
+#  Cruise,      Day, File_Id,            fsc_adj,             chl_adj,              pe_adj
+# Tokyo_3, 2011_263,     136, -19052.87804878049, -10591.439024390245, -26775.975609756097
+# 
+# It is a 20GB file and about 80 bytes per row so something like 150 million FC rows
+#
+fFC = open(flowcyFile)
+fcLines = 2
+a = fFC.readline()
+print a
+a = fFC.readline()
+print a
+while True:
+    a = fFC.readline()
+    if a == "": break
+    fcLines += 1
+    if fcLines%100000 == 0: print fcLines
+fFC.close()
+print 'counted ', fcLines, ' lines in the underway file'
+sys.exit(0)
+
 
 ##########################
 #######
@@ -113,6 +186,10 @@ fU = open(fullpathdir + underwayFile)
 fFC = open(fullpathdir + flowcyFile)
 fHarm = open(fullpathdir + harmFile, 'w')
 fHistogram = open(fullpathdir + histogramFile, 'w')
+
+
+
+
 
 # Parse the Underway header
 hdr = fU.readline()

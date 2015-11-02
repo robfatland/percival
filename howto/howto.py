@@ -1,4 +1,6 @@
-﻿# The top block 1 drops some random equations on top of one another, kinda artistic
+﻿# The 'howto' project is a catch-all bin for utilities that one might generalize; and a reference
+
+# The top block 1 drops some random equations on top of one another, kinda artistic
 
 import numpy as np
 import matplotlib
