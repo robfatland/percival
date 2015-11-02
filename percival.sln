@@ -16,15 +16,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		data\argo-profiles-4901664.nc = data\argo-profiles-4901664.nc
 		data\argo-trajectory-4901664.nc = data\argo-trajectory-4901664.nc
 		data\argo_readme.txt = data\argo_readme.txt
-		BDS.ipynb = BDS.ipynb
-		Boats.ipynb = Boats.ipynb
-		Cloud Day Talk.ipynb = Cloud Day Talk.ipynb
+		IPython Notebooks\BDS.ipynb = IPython Notebooks\BDS.ipynb
+		IPython Notebooks\Boats.ipynb = IPython Notebooks\Boats.ipynb
+		IPython Notebooks\Cloud Day Talk.ipynb = IPython Notebooks\Cloud Day Talk.ipynb
 		DocumentingDjango_rob5araldif_screencaps_and_notes.rtf = DocumentingDjango_rob5araldif_screencaps_and_notes.rtf
-		How To.ipynb = How To.ipynb
-		LiveOceanV2.ipynb = LiveOceanV2.ipynb
-		LWDS Paper.ipynb = LWDS Paper.ipynb
+		IPython Notebooks\How To.ipynb = IPython Notebooks\How To.ipynb
+		IPython Notebooks\LiveOcean.ipynb = IPython Notebooks\LiveOcean.ipynb
+		IPython Notebooks\LWDS Paper.ipynb = IPython Notebooks\LWDS Paper.ipynb
 		percival_notes.txt = percival_notes.txt
-		Robs Resource Notebook.ipynb = Robs Resource Notebook.ipynb
+		data\R5903601_130.nc = data\R5903601_130.nc
+		IPython Notebooks\Rainbow.ipynb = IPython Notebooks\Rainbow.ipynb
+		IPython Notebooks\Robs Resource Notebook.ipynb = IPython Notebooks\Robs Resource Notebook.ipynb
+		IPython Notebooks\serp.ipynb = IPython Notebooks\serp.ipynb
+		IPython Notebooks\SocketWriteErrorDemo.ipynb = IPython Notebooks\SocketWriteErrorDemo.ipynb
 	EndProjectSection
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "howto", "howto\howto.pyproj", "{B29EAE35-68D6-4797-A2BE-EB88DEB41717}"
