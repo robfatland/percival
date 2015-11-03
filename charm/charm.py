@@ -148,9 +148,14 @@ fcFile = path + 'armbrustlab_seaflow_phyto_adj_tokyo3.csv'
 charmBase = 'charm'
 histogramFile = path + 'charm_histogram.csv'
 
+# Let's make tying together all the charm output a later problem
 writeOnlyFCAddedRows = True
 
+# retaining all the underway column data in the output
 underwayArgsPerLine = 8
+
+# Going to write this as flat as possible (not with triples)
+fcNum = 3
 
 # Get a list of all files in the folder
 all = [ f for f in listdir(path) if isfile(join(path,f)) ]
@@ -288,7 +293,9 @@ while True:
 
     if dfTuple in udf: 
         hitIndex = udf.index(dfTuple)
-        udata[hitIndex].append((float(l[3]), float(l[4]), float(l[5])))
+
+        # you can append a triple tuple or you could extend 3 numbers
+        udata[hitIndex].append((int(float(l[3])), int(float(l[4])), int(float(l[5]))))
         nFCAppends += 1
     else:
         numDFFails += 1
