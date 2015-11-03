@@ -148,6 +148,9 @@ fcFile = path + 'armbrustlab_seaflow_phyto_adj_tokyo3.csv'
 charmBase = 'charm'
 histogramFile = path + 'charm_histogram.csv'
 
+numLinesToDo = 5000000
+modulusReportOut = 50000
+
 # Let's make tying together all the charm output a later problem
 writeOnlyFCAddedRows = True
 
@@ -170,8 +173,9 @@ for a in all:
 faveResultsFile = ''
 resultsFileExists = True
 if len(results) == 0: resultsFileExists = False
-
 maxResultsLines = 0
+
+# how far have we got so far?
 if resultsFileExists:
     # We want the prog file with the most lines in it
     for r in results:
@@ -252,14 +256,13 @@ while True:
 
 f.close()
 
+print '\n    ok we are underway.\n\n'
 
 # set up the FC file; lseek to the first row we want
 f = open(fcFile)
 for i in range(fcStartLine): f.readline()
 counter = 0
-nFCAppends = 0
-numLinesToDo = 5000000
-modulusReportOut = 100000
+nFCExtends = 0
 fcArgsPerLine = 6
 
 # read rows from FC; append when possible to udata using udf to determine the index
@@ -271,34 +274,35 @@ while True:
     l = line.split(',')
 
     # some diagnostics on is it going ok?
-    if len(l) != fcArgsPerLine:
-        numArgFailFC += 1
-        if not argFailFC:
-            argFailFC = True
-            argFailFirstIndexFC = numLinesFC
-        else:
-            argFailLastIndexFC = numLinesFC
+    #if len(l) != fcArgsPerLine:
+    #    numArgFailFC += 1
+    #    if not argFailFC:
+    #        argFailFC = True
+    #        argFailFirstIndexFC = numLinesFC
+    #    else:
+    #        argFailLastIndexFC = numLinesFC
 
     # shout out every n'th
-    if counter % modulusReportOut == 0: 
-        print counter, 'lines processed from FC'
+    if counter % modulusReportOut == 0: print counter, 'lines processed from FC'
 
     # julian day splits yyyy_ddd into year and day strings
-    jd = l[1].split('_')
-
+    # avoiding this split in favor of more direct / faster...
+    # jd = l[1].split('_')
     # day is pulled from yyyy_ddd in l[1] and file is pulled from l[2]
-    day = int(jd[1])
-    file = int(l[2])
-    dfTuple = (day, file)
+    # kilroy this looks dangerous if the day is only 1 or 2 digits
+    # l[0] is the cruise ID; we ignore that here
+    # day = int(l[1][-3:])
+    # file = int(l[2])
 
-    if dfTuple in udf: 
-        hitIndex = udf.index(dfTuple)
-
-        # you can append a triple tuple or you could extend 3 numbers
-        udata[hitIndex].append((int(float(l[3])), int(float(l[4])), int(float(l[5]))))
-        nFCAppends += 1
-    else:
+    try: 
+        hitIndex = udf.index((int(l[1][-3:]), int(l[2])))
+    except ValueError:
         numDFFails += 1
+    else:
+        # you can append a triple tuple or you could extend 3 numbers
+        udata[hitIndex].extend((float(l[3][:9]), float(l[4][:9]), float(l[5][:9])))
+        nFCExtends += 1
+
     if counter >= numLinesToDo: break
 
 # At this point we've fallen out of the above while True with some number of appends to udata[]: 
@@ -308,7 +312,7 @@ while True:
 #   out the proper name of the charm file. 
 f.close()
 
-charmFile = path + charmBase + '_' + str(fcStartLine + counter - 1) + '_' + str(fcStartLine) + '_' + str(nFCAppends) + '.csv'
+charmFile = path + charmBase + '_' + str(fcStartLine + counter - 1) + '_' + str(fcStartLine) + '_' + str(nFCExtends) + '.csv'
 f = open(charmFile, 'w')
 
 # Write out the harmonized output file
