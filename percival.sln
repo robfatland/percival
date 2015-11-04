@@ -37,6 +37,8 @@ Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "rob5araldif", "rob5araldif\
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "vicsort", "vicsort\vicsort.pyproj", "{1875D618-D362-4985-BDD8-FF9809A34264}"
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "shuffle", "shuffle\shuffle.pyproj", "{F06A3E9F-A555-4B91-83A3-1A3FECDB61B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,8 @@ Global
 		{E104514C-95F1-462A-BE72-0EDAEA9829E5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1875D618-D362-4985-BDD8-FF9809A34264}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1875D618-D362-4985-BDD8-FF9809A34264}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F06A3E9F-A555-4B91-83A3-1A3FECDB61B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F06A3E9F-A555-4B91-83A3-1A3FECDB61B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

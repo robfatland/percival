@@ -148,8 +148,8 @@ fcFile = path + 'armbrustlab_seaflow_phyto_adj_tokyo3.csv'
 charmBase = 'charm'
 histogramFile = path + 'charm_histogram.csv'
 
-numLinesToDo = 5000000
-modulusReportOut = 50000
+numLinesToDo = 40000000
+modulusReportOut = 250000
 
 # Let's make tying together all the charm output a later problem
 writeOnlyFCAddedRows = True
@@ -184,7 +184,7 @@ if resultsFileExists:
         if thisLines > maxResultsLines:
             maxResultsLines = thisLines
             faveResultsFile = r1
-    print 'my fave results file is ', r1
+    print 'my fave results file is ', faveResultsFile
 else:
     print 'no results files found.'
 
