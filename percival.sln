@@ -37,7 +37,7 @@ Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "rob5araldif", "rob5araldif\
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "vicsort", "vicsort\vicsort.pyproj", "{1875D618-D362-4985-BDD8-FF9809A34264}"
 EndProject
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "shuffle", "shuffle\shuffle.pyproj", "{F06A3E9F-A555-4B91-83A3-1A3FECDB61B7}"
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "charm_shuffle", "shuffle\charm_shuffle.pyproj", "{F06A3E9F-A555-4B91-83A3-1A3FECDB61B7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
