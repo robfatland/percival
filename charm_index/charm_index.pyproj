@@ -3,15 +3,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>f06a3e9f-a555-4b91-83a3-1a3fecdb61b7</ProjectGuid>
+    <ProjectGuid>bff60f11-f089-43b9-b347-80121eddcf8b</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>shuffle.py</StartupFile>
+    <StartupFile>charm_index.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
-    <Name>shuffle</Name>
-    <RootNamespace>shuffle</RootNamespace>
+    <Name>charm_index</Name>
+    <RootNamespace>charm_index</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,7 +22,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="shuffle.py" />
+    <Compile Include="charm_index.py" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

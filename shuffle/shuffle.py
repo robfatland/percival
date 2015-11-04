@@ -1,4 +1,4 @@
-#### This program shuffles together harmonized Underway + Flow Cytometry files
+﻿#### This program shuffles together harmonized Underway + Flow Cytometry files
 
 import os
 from os import listdir
@@ -73,8 +73,8 @@ for file in charms:
     input.append(open(path + file))
 
 # now input[] is a bunch of open files
-for i in range(len(udf)):
-    for j in range(len(input)):
+#for i in range(len(udf)):
+#    for j in range(len(input)):
 
 
 
