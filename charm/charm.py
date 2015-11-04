@@ -149,7 +149,7 @@ charmBase = 'charm'
 histogramFile = path + 'charm_histogram.csv'
 
 numLinesToDo = 40000000
-modulusReportOut = 250000
+modulusReportOut = 1000000
 
 # Let's make tying together all the charm output a later problem
 writeOnlyFCAddedRows = True
