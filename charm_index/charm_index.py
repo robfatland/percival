@@ -1,5 +1,6 @@
 ﻿#### This program shuffles together harmonized Underway + Flow Cytometry files
 
+import numpy as np
 import sys
 import os
 from os import listdir
@@ -46,7 +47,7 @@ input = []
 f = open(uFile)
 f.readline()
 
-# load up the underway lists udf[] and udata[]
+# load up the underway lists udf[] and initialize udata[]
 while True:
     line = f.readline()
     if line == '': break
@@ -61,21 +62,56 @@ while True:
 
 f.close()
 
-print '\n    ok we are underway.\n\n'
+print '\n    ok we are underway with ' + str(len(udf)) + 'udf elements\n\n'
+
+nUnderways = len(udf)
 
 
+print 'The charms are: '
 for i in range(len(charms)):
-    index = []
+    print charms[i]
+
+# slightly kludged method of filling in udata[] as a rectangular table
+for i in range(len(charms)):
+
+    print 'starting on charm file ' + charms[i]
+
     f = open(path + charms[i])
-    lines = 0
+    nLines = 0
     while True:
         r = f.readline()
         if r == "": break
-        lines += 1
-        print len(r)
-    print str(lines) + ' lines in file ' + charms[i]
-    if i == 1: break
+        nLines += 1
+        s = r.split(',')
+        index = udf.index((int(s[0]),int(s[1])))
 
+        # append an entry to udata[] equal to how many triples there were in this line of this file
+        udata[index].append((len(s) - 8) / 3)
+    
+    # close that input     
+    f.close()
+
+    # now scan the udata[] list for "short" rows (that have no value added from the above loop)
+    #   and upon finding one create the entry '0'
+    nNopes = 0
+    for j in range(len(udf)):
+        if len(udata[j]) == 8 + i:
+            nNopes += 1
+            udata[j].append(0)
+
+    if nNopes + nLines != nUnderways:
+        print 'nNopes = ' + str(nNopes)
+        print 'nLines = ' + str(nLines)
+        print 'sum = ' + str(nNopes + nLines)
+        print 'expected sum = ' + str(nUnderways)
+
+f = open(path + indexBase + '.csv', 'w')
+for i in range(nUnderways):
+    for j in range(8 + len(charms) - 1):
+        f.write(str(udata[i][j]) + ',')
+    f.write(str(udata[i][8 + len(charms) - 1]) + '\n')
+
+f.close()
 
 sys.exit(0)
 

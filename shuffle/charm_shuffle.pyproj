@@ -6,7 +6,7 @@
     <ProjectGuid>f06a3e9f-a555-4b91-83a3-1a3fecdb61b7</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>shuffle.py</StartupFile>
+    <StartupFile>charm_shuffle.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -23,7 +23,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="shuffle.py" />
+    <Compile Include="charm_shuffle.py" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
