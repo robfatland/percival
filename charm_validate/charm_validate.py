@@ -1,4 +1,4 @@
-#### This program shuffles together harmonized Underway + Flow Cytometry files
+﻿#### This program shuffles together harmonized Underway + Flow Cytometry files
 
 import sys
 import os
@@ -12,15 +12,15 @@ path = rootdir + datadir + domaindir
 validateBase = 'validate'
 outputBase = 'output'
 
-f = open(path + 'c.csv')
+f = open(path + outputBase + '.csv')
 # g = open(path + validateBase + '.csv', 'w')
-
-udata = []
 
 nRows = 0
 while True:
     r = f.readline()
     if r == '': break
+    print r
+    sys.exit()
     nRows += 1
     print nRows
     # s = r.split(',')

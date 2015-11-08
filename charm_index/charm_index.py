@@ -1,18 +1,13 @@
-﻿#### This program shuffles together harmonized Underway + Flow Cytometry files
+﻿#### This program produces an index matrix: rows are all of the Underway rows and columns are the
+####   sequential charm files produced by 'charm': Each being some number of FC triples appended onto
+####   those same Underway rows. This is bookkeeping to prepare to shuffle all the charm files together
+####   into a single charm file. 
 
 import numpy as np
 import sys
 import os
 from os import listdir
 from os.path import isfile, join
-
-#   5727 rows in the charm files (at most!)
-
-####################
-# 
-# Configure
-#
-####################
 
 rootdir = "C:\\Users\\fatla_000\\Documents\\"
 datadir = "Data\\"
@@ -22,20 +17,26 @@ uFile = path + 'Tokyo3_sds_complete.csv'
 charmBase = 'charm'
 indexBase = 'index'
 
-# Get a list of all files in the folder
-all = [ f for f in listdir(path) if isfile(join(path,f)) ]
+udfColumns = 8
 
-# Get a list of all existing charm results files
+def allZeros(a):
+    for i in len(a):
+        if a[i] != 0: return False
+    return True
+
+# Get a list of all charm files in the folder
+all = [ f for f in listdir(path) if isfile(join(path,f)) ]
 charms = []
 for a in all:
     b = a.split('_')
     if b[0] == charmBase: charms.append(a)
 
-print 'I found ' + str(len(charms)) + ' charm files; now loading the underway begins.'
+nCharms = len(charms)
+print 'I found ' + str(nCharms) + ' charm files; now loading the underway begins.'
 
 # The underway day-file list and the full underway header
 udf = []
-udata = []
+indexTable = []
 
 # The data row (output; to be compiled)
 data = []
@@ -47,7 +48,7 @@ input = []
 f = open(uFile)
 f.readline()
 
-# load up the underway lists udf[] and initialize udata[]
+# load up the underway lists udf[] and initialize indexTable[]
 while True:
     line = f.readline()
     if line == '': break
@@ -58,122 +59,58 @@ while True:
     lat = 0.0 if l[0] == 'NA' else float(l[0])
     lon = 0.0 if l[1] == 'NA' else float(l[1])
     udf.append((day, file))
-    udata.append([day, file, l[7].rstrip('\n'), lon, lat, float(l[3]), float(l[4]), float(l[6])])
+    indexTable.append([day, file, l[7].rstrip('\n'), lon, lat, float(l[3]), float(l[4]), float(l[6])])
 
 f.close()
 
 print '\n    ok we are underway with ' + str(len(udf)) + 'udf elements\n\n'
 
-nUnderways = len(udf)
+nUnderway = len(udf)
 
 
 print 'The charms are: '
-for i in range(len(charms)):
+for i in range(nCharms):
     print charms[i]
 
-# slightly kludged method of filling in udata[] as a rectangular table
-for i in range(len(charms)):
+
+# Now let's fill in the entire indexTable[][] with Zeros
+# This is the presumption of 'no-entry' for each underway-row x charm-file
+for i in range(nUnderway):
+    for j in range(nCharms):
+        indexTable[i].append(0)
+
+# fill in non-zero entries of indexTable[]
+for i in range(nCharms):
 
     print 'starting on charm file ' + charms[i]
 
+    # this file does not have all nUnderway rows
     f = open(path + charms[i])
-    nLines = 0
+
+    nRowsThisFile = 0
     while True:
         r = f.readline()
         if r == "": break
-        nLines += 1
+        nRowsThisFile += 1
         s = r.split(',')
         index = udf.index((int(s[0]),int(s[1])))
 
-        # append an entry to udata[] equal to how many triples there were in this line of this file
-        udata[index].append((len(s) - 8) / 3)
+        # append an entry to indexTable[] equal to how many triples there were in this line of this file
+        indexTable[index][i + udfColumns] = (len(s) - udfColumns) / 3
     
     # close that input     
     f.close()
 
-    # now scan the udata[] list for "short" rows (that have no value added from the above loop)
-    #   and upon finding one create the entry '0'
-    nNopes = 0
-    for j in range(len(udf)):
-        if len(udata[j]) == 8 + i:
-            nNopes += 1
-            udata[j].append(0)
+    totalZeroLines = nUnderway - nRowsThisFile
+    print '  charm file ' + str(i) + ' has ' + str(totalZeroLines) + ' zero rows\n'
 
-    if nNopes + nLines != nUnderways:
-        print 'nNopes = ' + str(nNopes)
-        print 'nLines = ' + str(nLines)
-        print 'sum = ' + str(nNopes + nLines)
-        print 'expected sum = ' + str(nUnderways)
-
+# write the indexTable to a flat file
 f = open(path + indexBase + '.csv', 'w')
-for i in range(nUnderways):
-    for j in range(8 + len(charms) - 1):
-        f.write(str(udata[i][j]) + ',')
-    f.write(str(udata[i][8 + len(charms) - 1]) + '\n')
+for i in range(nUnderway):
+    for j in range(udfColumns + nCharms - 1):
+        a = str(indexTable[i][j]) + ','
+        f.write(a)
+    a = str(indexTable[i][udfColumns + nCharms - 1]) + '\n'
+    f.write(a)
 
 f.close()
-
-sys.exit(0)
-
-
-
-    #g = open(path + indexBase + '_' + charms[i], 'w')
-    #for j in range(len(index)):
-    #    g.write(index[j]
-
-
-## read rows from FC; append when possible to udata using udf to determine the index
-#while True:
-
-#    line = f.readline()
-#    if line == '': break
-#    counter += 1
-#    l = line.split(',')
-
-#    # some diagnostics on is it going ok?
-#    #if len(l) != fcArgsPerLine:
-#    #    numArgFailFC += 1
-#    #    if not argFailFC:
-#    #        argFailFC = True
-#    #        argFailFirstIndexFC = numLinesFC
-#    #    else:
-#    #        argFailLastIndexFC = numLinesFC
-
-#    # shout out every n'th
-#    if counter % modulusReportOut == 0: print counter, 'lines processed from FC'
-
-#    # julian day splits yyyy_ddd into year and day strings
-#    # avoiding this split in favor of more direct / faster...
-#    # jd = l[1].split('_')
-#    # day is pulled from yyyy_ddd in l[1] and file is pulled from l[2]
-#    # kilroy this looks dangerous if the day is only 1 or 2 digits
-#    # l[0] is the cruise ID; we ignore that here
-#    # day = int(l[1][-3:])
-#    # file = int(l[2])
-
-#    try: 
-#        hitIndex = udf.index((int(l[1][-3:]), int(l[2])))
-#    except ValueError:
-#        numDFFails += 1
-#    else:
-#        # you can append a triple tuple or you could extend 3 numbers
-#        udata[hitIndex].extend((float(l[3][:9]), float(l[4][:9]), float(l[5][:9])))
-#        nFCExtends += 1
-
-#    if counter >= numLinesToDo: break
-
-## At this point we've fallen out of the above while True with some number of appends to udata[]: 
-##   Either owing to trying out numLinesToDo rows of FC or ran out of FC data. In either case
-##   'counter' will indicate how many input FC rows we looked at. fcStartLine is the first row of
-##   fc we began with and nFCAppends is the number of successful appends from FC. Now we can figure
-##   out the proper name of the charm file. 
-#f.close()
-
-
-#            # Write all of the elements of the row separated by commas...
-#            rowLen = len(udata[i])
-#            # For rowlen = 10 this loop goes 0, 1, 2, ..., 8
-#            for q in range(rowLen - 1):
-#                f.write(str(udata[i][q]) + ',')
-#            # ...and then we write element 9 with linefeed
-#            f.write(str(udata[i][rowLen - 1]) + '\n')
