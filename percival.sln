@@ -36,11 +36,11 @@ Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "rob5araldif", "rob5araldif\
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "vicsort", "vicsort\vicsort.pyproj", "{1875D618-D362-4985-BDD8-FF9809A34264}"
 EndProject
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "charm_shuffle", "shuffle\charm_shuffle.pyproj", "{F06A3E9F-A555-4B91-83A3-1A3FECDB61B7}"
-EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "charm_index", "charm_index\charm_index.pyproj", "{BFF60F11-F089-43B9-B347-80121EDDCF8B}"
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "charm_validate", "charm_validate\charm_validate.pyproj", "{C06ECBBF-53D9-4AD4-A9A4-920C54A7F4DE}"
+EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "charm_shuffle", "charm_shuffle\charm_shuffle.pyproj", "{F06A3E9F-A555-4B91-83A3-1A3FECDB61B7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -64,12 +64,12 @@ Global
 		{E104514C-95F1-462A-BE72-0EDAEA9829E5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1875D618-D362-4985-BDD8-FF9809A34264}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1875D618-D362-4985-BDD8-FF9809A34264}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F06A3E9F-A555-4B91-83A3-1A3FECDB61B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F06A3E9F-A555-4B91-83A3-1A3FECDB61B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BFF60F11-F089-43B9-B347-80121EDDCF8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BFF60F11-F089-43B9-B347-80121EDDCF8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C06ECBBF-53D9-4AD4-A9A4-920C54A7F4DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C06ECBBF-53D9-4AD4-A9A4-920C54A7F4DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F06A3E9F-A555-4B91-83A3-1A3FECDB61B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F06A3E9F-A555-4B91-83A3-1A3FECDB61B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
