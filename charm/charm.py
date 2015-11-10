@@ -1,123 +1,132 @@
-﻿#### This program harmonizes the Flow Cytometry file (20GB) to the Underway file (.5MB)
-
-import matplotlib
-from matplotlib import pyplot
-
-import numpy as np
-import scipy
-import sys
-import csv
-from datetime import datetime
-
-import os
-from os import listdir
-from os.path import isfile, join
-
-####
-####
-#### This program harmonizes the Flow Cytometry file (20GB) to the Underway file (.5MB)
-####
-#### Jargon: Day-file is a native (tuple!) classification scheme used by both FC and Underway data files.
-####   The good news is that they are present in both; so FC rows can be binned into Underway rows.
-####   The bad news is that it is unclear if they are unique; so that gets our first kilroy.
-####
-#### We want this program to run piecemeal because it would otherwise be a bit too memory intensive.
-#### Considerations:
-####   Does a prior results file exist? If so it should contain the number of FC rows processed
-####   How many FC rows find no home underway row?
-####   How many underway rows find no FC data? Negligible FC data?
-####   For simplicity we index the big FC file from row 0 = header, 1, 2, ... are data 
-####
-#### FC rows are appended as decimal-truncated triples to the day-file corresponding Underway rows
-####   This means that the rows are jagged and can be quite long.
-####
-#### While running we write to a progress file called charmInProgress_working.csv. When we are done working on it
-####   we rename it charmResult_a_b_c.csv. 
-####     a = the last completed row of the FC file numbered from 1, 2, ... (0 is header)
-####     b = the row that this file starts on
-####     c = the number of properly sorted FC rows, i.e. rows that found Underway bins
-####
-#### Kilroy: Here are assumptions and things this program does not check
-####   Assume the Day-File pairs in Underway are unique
-####   Assume the value in the Cruise column in the FC file does not vary
-####   Assume Day-File pairs are strictly increasing in time in the way that hour-minute pairs are strictly increasing
-####   It is acceptable to write the variable-length output rows as comma-separated with the FC triples also comma-separated in parens
-####   By default only write Day-File rows from Underway where FC values have been appended
-####       This can be turned off but the "Every Underway Row" output is not carefully formatted as CSV; it is just a List print
-####   It is ok to change lat / lon == 'NA' values to 0.0 in Underway rows.
-####       Note that this indiscriminately puts that row at null island or on the equator or the prime meridian! 
-####   There is no datetime ambiguity: Everything is Zulu
-####   There are no bad data values in U or FC: temp, sal, red, fwd, chlor and pe are all good numbers
-####       U values temp sal red are retained as float precision; however to cut output file size:
-####       For FC values it is acceptable precision to round to integer values.
-####           Dynamic range of FC values is -65k to 65kj
-####   5727 rows in the Underway file as contiguous 3-minute intervals implies a cruise of 11.9 days
-####       The actual date-time range is 2011-09-19 10:57:00 to 2011-10-02 08:26:00.
-####       This is 12 days 21 hours 29 minutes, about one day more than the day-file interval seems to indicate
-####       The point is that the Underway record is about 10% gappy and the FC assignment is also a bit gappy.
-####
-
-# Prep info on Underway file: The one I'm using is 1 header + 5727 rows of data, each a 3 minute window
-# Header and first data row:
-#   LAT, LON, file,       OCEAN.TEMP,         SALINITY,      day, BULK.RED,             timestamp
-#    NA,  NA,   45, 27.2468196969697, 33.4421954545454, 2011_262, 102.8189, 9/19/2011 10:57:00 PM
+﻿##################################
 #
-# This code counts the lines in the file:
-# fU = open(underwayFile)
-# underwayLines = 0
-# while True:
-#     a = fU.readline()
-#     if a == "": break
-#     underwayLines += 1
-# fU.close()
-# print 'counted ', underwayLines, ' lines in the underway file'
+# This program harmonizes Flow Cytometry data (O(GB)) to a corresponding Underway file (O(MB))
+#
+# We begin with a more detailed statement of the problem at hand and include asides on jargon.
 # 
-# Header and first data row: fsc = forward scatter, chl = chlorophyll, pe = phycoerythrin
-#  Cruise,      Day, File_Id,            fsc_adj,             chl_adj,              pe_adj
-# Tokyo_3, 2011_263,     136, -19052.87804878049, -10591.439024390245, -26775.975609756097
+# The Flow Cytometry (FC) file is flat: A header row followed by some number of fixed-length data
+#   rows where the data are separated by commas. The file format is consequently called CSV for
+#   'comma separated values'. The Underway file follows the same convention but of course with 
+#   a different header. 
 # 
-# It is a 20GB file and about 80 bytes per row so something like 150 million FC rows
+# Jargon: 'Day-file' is jargon here. It refers to a pair of numbers, a tuple, that corresponds to a
+#   three minute time window. Many but not all such windows over the course of the research cruise
+#   form the 'buckets' into which the time-series data are sorted. Multiple FC values (O(10k)) will
+#   be sorted into most of the day-file bins. For a 12 days cruise we have about 5700 day-file bins
+#   in the working case that resulted in this code.
 #
-
-#    print 'Flow Cytometer header', c, 'is:', hb[c]
+# The motivation for this program is the idea that associating day-file FC values sorts them in
+#   time. As long as we are doing that we might as well also associate the Underway values with 
+#   them. In the formative case there are three FC data values (fsc for forward scatter, chl for
+#   chlorophyll, and pe for phycoerythrin) which again occur in a typical day-file bin tens of 
+#   thousands of times. The Underway file has temperature, salinity and "bulk red" data values;
+#   but only such triple associated with each day-time bin. 
+# 
+# This code was originally written to run piecemeal to reduce the in-memory load on the computer.
 #
-# Here are the columns for Underway: 
-# LAT
-# LON
-# File
-# Temp
-# Salinity
-# Day
-# Bulk.red
-# timestamp
+#                              <<<<IMPORTANT NOTE ON METHOD>>>>>
 #
-# Here are the columns for FC
-# Cruise
-# Day
-# File
-# Forward scatter
-# Chlorophyll
-# Phycoerythrin
+#   The easiest way to simplify this code would be to sort the FC source file by chronological time which
+#     MUST correspond to day-file order, e.g. day 100 file 10 NEVER occurs earlier in actual time than
+#     day 100 file 8, to use an illustrative example. If this was the case the program could read a set
+#     of consecutive FC rows with the same day-file tag, append the resulting row to output, and move on
+#     in the input file; no back-tracking in the input file and no need to use 30GB of RAM.
 #
-# udf[] is the Underway day-file List: Each element is a tuple. These give us the reference information for
-#   binning the FC data; but the FC data is appended to elements of udata[].
-# udata[] is a list of lists.  Each list/row of udata begins as the Underway basis row: 8 values.  
+#                              <<<<IMPORTANT NOTE ON METHOD>>>>>
+#
+#   Here is an outline of the steps:
+#
+# 1. Read the Underway file into two lists: udf[] and udata[]. The former is used for index
+#    determination using tuples and the latter is the entire Underway data row. 
+# 2. Loop over some desired number of files. For each:
+#        - Loop over FC rows, sorting them as 'extend()' into the udata[] rows.
+#            . in passing accumulate an index of temp files and Underway rows: Number of FC triples.
+#        - Then write that partial-result file
+# 3. Start over with the Underway rows loop: Accumulate one row from all the temporary files
+#        - Once a single combined row is accumulated it is written to the harmonized output file
+#
+# Consequences of harmonization: 
+#   There will be some FC rows that can not be found in Underway: Discarded
+#   Harmonized rows have different lengths depending on how many FC triples were found
+#   Some Underway rows receive Zero FC triples
+#   All Underway rows have some bookkeeping values appended to the original 8 fields (see below)
+#
+# After the above harmonizing step: We can proceed to operate on each row independently in
+#   terms of data reduction ideas like clustering; and we can proceed with some data cleaning 
+#   on the metadata, for example interpolating lat/lon values over segments where that data 
+#   drops out between good fixes.
+# 
+# The other post-harmonizing step to bear in mind is that we can visualize these data in a 
+#   variety of ways, for example on Worldwide Telescope (WWT). The 'easy' way to do this is to create
+#   a CSV file with headers and format oriented towards the WWT interface since it works well with
+#   flat tables.
+#  
+# Intermediate result files are called charm_a_b_c.csv 
+#     a = the last completed row of the FC file numbered from 1, 2, ... (0 is header)
+#     b = the row that this file starts on
+#     c = the number of properly sorted FC rows, i.e. rows that found Underway bins
+# Assumptions etc that this program may not check
+#    Day-File values in Underway are unique
+#    Cruise column in the FC file does not vary
+#    Day-File values in Underway do not need to be resorted chronologically
+#    lat / lon == 'NA' values are converted to 0.0 in Underway rows
+#      This indiscriminately puts that row at null island
+#    There is no datetime ambiguity: Everything is Zulu
+#    There are no bad data values in U or FC: temp, sal, red, fwd, chlor and pe are all good numbers (false (kilroy))
+#    Dynamic range of FC values is -65k to 65k
+#    File format is fixed per the Tokyo3 motivating example.
+#
+# Details from the motivating Tokyo-3 cruise:   
+#   5727 rows in the Underway file (totals 11.9 days but they are not contiguous)
+#   Actual Underway date-time range is 2011-09-19 10:57:00 to 2011-10-02 08:26:00.
+#     This is 12 days 21 hours 29 minutes
+#     Therefore the Underway record is about 10% gappy
+#     FC assignment misses about 300 rows entirely; so also gappy
+#
+#   Underway file: 1 header row + 5727 data rows of data (each row a 3-minute window)
+#     Header and first data row. Notice 'day' is in fact year_day so in the case of the first
+#     line day-file = (262, 45).
+#
+#     LAT, LON, file,       OCEAN.TEMP,         SALINITY,      day, BULK.RED,             timestamp
+#      NA,  NA,   45, 27.2468196969697, 33.4421954545454, 2011_262, 102.8189, 9/19/2011 10:57:00 PM
+# 
+#   FC file header and first data row: fsc = forward scatter, chl = chlorophyll, pe = phycoerythrin
+#     Cruise,       Day, File_Id,            fsc_adj,             chl_adj,              pe_adj
+#     Tokyo_3, 2011_263,     136, -19052.87804878049, -10591.439024390245, -26775.975609756097
+# 
+#  The FC source file is 20GB and about 284 million rows; of which about 1% are discarded as not
+#    matching an Underway day-file. 
+# 
+# Underway columns:  
+#   LAT
+#   LON
+#   File
+#   Temp
+#   Salinity
+#   Day
+#   Bulk.red
+#   timestamp
+#
+# FC columns:
+#   Cruise
+#   Day
+#   File
+#   Forward scatter
+#   Chlorophyll
+#   Phycoerythrin
+#
+# udf[] is the Underway day-file List: Each element is a tuple providing indices for the FC data.
+# udata[] is a list of lists.  Each list/row of udata[] begins as the Underway row: 8 values.  
 #   Each row may subsequently have FC triples appended to it.
-#   The rows are re-ordered as follows:
+#
+# On file-write the udata[] Underway values are re-ordered more sensibly although this is in fact
+#   quite unnecessary since it is not used (kilroy):
 #     day / file / timestamp / lon / lat / temp / salinity / red 
 #   The entire Underway dataset is easily held in memory.
 #
-
-#
-# Examples of how to verify my python List/Tuple syntax is correct...
-#
-# print 'udf[100] =', udf[100]
-# print 'udf[100][0] = ', udf[100][0]
-# print 'udf[100][1] = ', udf[100][1]
-# gives us 263 and 80
-#
-# dfTuple = (263, 80)
-# if dfTuple in udf: 
+# Python note: How day-file indexing is done once udf[] is populated with (day, file) tuples:
+#   dfTuple = (263, 80)
+#   if dfTuple in udf: 
 #     hitIndex = udf.index(dfTuple)
 #     print udf[hitIndex], ' -- ', udata[hitIndex]
 # else:
@@ -132,6 +141,11 @@ from os.path import isfile, join
 # Chlorophyll             (data)
 # Phycoerythrin           (data)
 #
+#############################################################
+
+from os import listdir
+from os.path import isfile, join
+
 
 ####################
 # 
@@ -151,7 +165,6 @@ histogramFile = path + 'charm_histogram.csv'
 numLinesToDo = 40000000
 modulusReportOut = 1000000
 
-# Let's make tying together all the charm output a later problem
 writeOnlyFCAddedRows = True
 
 # retaining all the underway column data in the output
@@ -310,6 +323,7 @@ while True:
 #   'counter' will indicate how many input FC rows we looked at. fcStartLine is the first row of
 #   fc we began with and nFCAppends is the number of successful appends from FC. Now we can figure
 #   out the proper name of the charm file. 
+
 f.close()
 
 charmFile = path + charmBase + '_' + str(fcStartLine + counter - 1) + '_' + str(fcStartLine) + '_' + str(nFCExtends) + '.csv'
@@ -338,65 +352,3 @@ for i in range(len(udf)):
 
 f.close()
 
-## histogram has 100 bins for 'thousands of points'
-#histogram = []
-#for i in range(100):
-#    histogram.append(0)
-
-#for i in range(len(udf)):
-#    bin = udata[i][8]/1000
-#    histogram[bin] += 1
-
-#for i in range(100):
-#    fHistogram.write(str(i*1000))
-#    fHistogram.write(',')
-#    fHistogram.write(str(histogram[i]))
-#    fHistogram.write('\n')
-                      
-#fHistogram.close() 
-
-
-
-
-##################
-#####
-##### What happened...
-#####
-##### All the post-run diagnostics are printed in this block
-#####
-##################
-
-
-
-#print '\n'
-#print numLinesU, 'lines of data in Underway; arg count fail =', argFailU
-#if argFailU:
-#    print 'Underway first arg fail line =', argFailFirstIndexU
-#    print 'Underway last arg fail line =', argFailLastIndexU
-#    print 'Underway number of arg fails =', numArgFailU
-#print '\n'
-#print 'The datetime range in Underway is ', udata[0][2], 'to', udata[numLinesU-1][2]
-## print 'The interval is ', datetime.timedelta(datetime.datetime(udata[0][2]), datetime.datetime(udata[numLinesU-1][2]))
-#print '\n'
-#print 'day-file assignment fails = ', numDFFails, 'of attempts = ', numLinesFC
-#print '\n'
-#print 'min non-zero appends = ', minDFFC, 'and max non-zero appends = ', maxDFFC
-#print '\n'
-#print 'The last date-file pair in Underway is ', udf[numLinesU - 1][0], '--', udf[numLinesU - 1][1]
-#print 'The last date-file reached in the FC scan is ', maxDay, '--', maxFile
-#print '\n'
-
-
-#print 'expect', numLinesU, 'lines; totting up zero-appends and appends gives', zeroDF + nonzeroDF
-#print 'zero appends = ', zeroDF, 'and nonzero appends = ', nonzeroDF
-
-
-
-# print numLinesB, 'lines of data in flow cytometry (at least)'
-# print 'arg count fail =', argFailB
-# if argFailB:
-#     print 'first fail line =', argFailFirstIndexB
-#     print 'last fail line =', argFailLastIndexB
-#     print 'number of fails =', numArgFailB
-
-print '\nI think I am done.\n'
