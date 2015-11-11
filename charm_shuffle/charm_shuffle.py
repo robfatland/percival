@@ -11,7 +11,7 @@ domaindir = "UW Oceanography\\Sophie\\"
 path = rootdir + datadir + domaindir
 uFile = path + 'Tokyo3_sds_complete.csv'
 charmBase = 'charm'
-outputBase = 'output'
+outputBase = 'charmTokyo3'
 indexBase = 'index'
 
 # Charm list
@@ -42,6 +42,7 @@ while True:
     file = int(l[2])
     lat = 0.0 if l[0] == 'NA' else float(l[0])
     lon = 0.0 if l[1] == 'NA' else float(l[1])
+    #     day / file / timestamp / lon / lat / temp / salinity / red [ / number-FC triples ]
     udata.append([day, file, l[7].rstrip('\n'), lon, lat, float(l[3]), float(l[4]), float(l[6])])
 
 f.close()
@@ -78,7 +79,7 @@ for i in range(nUnderway):
     rowLen = len(udata[i])
     sampLen = (rowLen - 8) / 3
 
-    # ok now we change format: I'm going to pre-pend the number of triples in the row after the first 8 entries
+    # ok now we change format: I'm going to insert the number of triples in the row after the first 8 entries
     udata[i].insert(8, sampLen)
 
     # re-calculate rowLen

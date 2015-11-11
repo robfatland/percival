@@ -121,7 +121,8 @@
 #
 # On file-write the udata[] Underway values are re-ordered more sensibly although this is in fact
 #   quite unnecessary since it is not used (kilroy):
-#     day / file / timestamp / lon / lat / temp / salinity / red 
+#     day / file / timestamp / lon / lat / temp / salinity / red [ / number-FC triples ]
+#     (kilroy this last value is appended in charm_shuffle; early versions of this code...)
 #   The entire Underway dataset is easily held in memory.
 #
 # Python note: How day-file indexing is done once udf[] is populated with (day, file) tuples:

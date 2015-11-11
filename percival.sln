@@ -42,6 +42,10 @@ Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "charm_validate", "charm_val
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "charm_shuffle", "charm_shuffle\charm_shuffle.pyproj", "{F06A3E9F-A555-4B91-83A3-1A3FECDB61B7}"
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "charm_subset", "charm_subset\charm_subset.pyproj", "{B848DD6D-8A32-44AA-9828-730335D4B021}"
+EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "charm_kmeans", "charm_kmeans\charm_kmeans.pyproj", "{105880CE-F98F-4AA2-8C82-90353E2FF03F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,6 +74,10 @@ Global
 		{C06ECBBF-53D9-4AD4-A9A4-920C54A7F4DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F06A3E9F-A555-4B91-83A3-1A3FECDB61B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F06A3E9F-A555-4B91-83A3-1A3FECDB61B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B848DD6D-8A32-44AA-9828-730335D4B021}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B848DD6D-8A32-44AA-9828-730335D4B021}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{105880CE-F98F-4AA2-8C82-90353E2FF03F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{105880CE-F98F-4AA2-8C82-90353E2FF03F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
