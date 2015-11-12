@@ -36,11 +36,11 @@ from os.path import isfile, join
 ###################
 
 # choose precip = 3, evap = 4, runoff = 5, baseflow = 6
-dataTypeIndex = 4
+dataTypeIndex = 6
 
 # command line arguments; pulled up from 'buried in the code'
 # Data grab will commence on calendar year (1950 + yearsSkip)
-yearsSkip = 0
+yearsSkip = 3
 
 # we read every (linesDaySkip + 1)'th day of data and skip the remainder
 linesDaySkip = 2
@@ -58,6 +58,9 @@ lonMag = 1.0
 
 # turn this on (True) to drastically reduce number of polygons drawn
 drawOnlySignificantData = True
+
+# turn this on (True) to draw data as markers rather than as GEOMETRY Well Known Text
+drawDataAsMarkers = True
 
 # in the case where we don't want to draw "no precip" or "no runoff" or "no base flow" this threshold is used as the
 #   cutoff. It doesn't really make sense for evap; a different scheme would be wanted there (and a different pedestal)
@@ -131,8 +134,8 @@ dataTypeScale = dataTypeScaleList[dataTypeIndex]
 ########################
 
 # Write a long list as a sequence of rows to a CSV file: customized for WWT with GEOMETRY / MULTIPOLYGON WKT
-def WriteCSVFileWithGEOMETRY(file, longlist, header, dlonScale, dlatScale):
-    # expect header to be GEOMETRY date altitude color for a total of five values
+def WriteCSVFileWithGEOMETRY(file, longlist, header, dlonScale, dlatScale, geomType):
+    # expect header to be GEOMETRY date altitude color for a total of five values since GEOM uses two
     entries_per_row = 5
 
     # How many rows we expect to write to the output file
@@ -172,6 +175,41 @@ def WriteCSVFileWithGEOMETRY(file, longlist, header, dlonScale, dlatScale):
 
     # and that's it
     f.close()
+
+def WriteCSVFileWithLonLat(file, longlist, header):
+
+    # expect header to be lon lat date altitude color for a total of five values
+    entries_per_row = 5
+
+    # How many rows we expect to write to the output file
+    numRows = len(longlist) / entries_per_row
+
+    # Check that the list length jives with the assumptions
+    if numRows * entries_per_row != len(longlist):
+        print "The long list does not parse evenly into expected entries per row!!!"
+        sys.exit(0)
+
+    # Take care of the top of the file
+    f = open(file, 'w')
+    f.write(header + '\n')
+
+    # loop over the rows of the output file
+    for i in range(numRows):
+
+        # start is the index of this row's elements in the list
+        start = i * entries_per_row
+
+        # Add in the date, the altitude and the color for this row
+        f.write(str(longlist[start]) + ',')
+        f.write(str(longlist[start + 1]) + ',')
+        f.write(str(longlist[start + 2]) + ',')
+        f.write(str(longlist[start + 3]) + ',')
+        f.write(str(longlist[start + 4]) + '\n')
+
+    # and that's it
+    f.close()
+
+
 
 # This appends the next entry onto a row: Done in different locations in the code so consolidated here
 def extendRows(pedestal, value, dataTypeScale, colorDC, colorInterval, nColors, lon, lat, year, month, day, colors, rows):
@@ -286,7 +324,11 @@ for i in range(len(flux)):
         outCounter += 1
         
         outName = fullpathdir + outfileBase + sequentialExtension + '.csv'
-        WriteCSVFileWithGEOMETRY(outName, rows, "GEOMETRY,date,alt0,color", dlonScale, dlatScale)
+
+        if drawDataAsMarkers:
+             WriteCSVFileWithLonLat(outName, rows, "lon,lat,date,alt,color")
+        else:
+            WriteCSVFileWithGEOMETRY(outName, rows, "GEOMETRY,date,alt,color", dlonScale, dlatScale, geomType)
         
         # clear the rows[] list
         rows = []
