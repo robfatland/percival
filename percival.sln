@@ -76,6 +76,12 @@ Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "charm_subset", "charm_subse
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "charm_kmeans", "charm_kmeans\charm_kmeans.pyproj", "{105880CE-F98F-4AA2-8C82-90353E2FF03F}"
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "prophet", "prophet\prophet.pyproj", "{94B62051-F799-4AAD-B22C-6C2F61FA5683}"
+EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "eucellipsis", "eucellipsis\eucellipsis.pyproj", "{93351442-042C-4A5B-99F3-65AB13CBFB91}"
+EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "araldif2", "araldif2\araldif2.pyproj", "{EE5A5E6D-C764-4171-AD5C-F711A73BABDF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -108,6 +114,16 @@ Global
 		{B848DD6D-8A32-44AA-9828-730335D4B021}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{105880CE-F98F-4AA2-8C82-90353E2FF03F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{105880CE-F98F-4AA2-8C82-90353E2FF03F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94B62051-F799-4AAD-B22C-6C2F61FA5683}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94B62051-F799-4AAD-B22C-6C2F61FA5683}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94B62051-F799-4AAD-B22C-6C2F61FA5683}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94B62051-F799-4AAD-B22C-6C2F61FA5683}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93351442-042C-4A5B-99F3-65AB13CBFB91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93351442-042C-4A5B-99F3-65AB13CBFB91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE5A5E6D-C764-4171-AD5C-F711A73BABDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE5A5E6D-C764-4171-AD5C-F711A73BABDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE5A5E6D-C764-4171-AD5C-F711A73BABDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE5A5E6D-C764-4171-AD5C-F711A73BABDF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

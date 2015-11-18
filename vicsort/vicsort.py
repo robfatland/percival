@@ -5,29 +5,23 @@ from os import listdir
 from os.path import isfile, join
 
 #
-# This program sorts out some VIC output into files suitable for import into WWT 
+# This program sorts out VIC flux output into files suitable for import into WWT. 
 # In WWT you would set Look At = Earth, open the Layer Manager, right click, select Add, open the CSV file...
-#   ...and there will be a pause of maybe 30 seconds while the data loads; talking about 590k values with typical parameters.
-# From there you'll need to make some adjustments to the imported layer:
+#   ...and there will be a pause while the data loads automatically. It will initially be time-disabled.
+# From here you'll need to adjust the imported layer:
 #   Select the new layer and click 'Time Series' so it knows it is time-enabled
-#   Set the Properties to include a nice time delay value like 8 or 16 days
+#   Right-click the layer and select Properties to bring up a wizard where you can modify things like time decay.
 #   Right-click the layer and set the opacity to very faint to see the underlying terrain
 #
-# kilroy here are a few items that could be done better or explored
-#   - by adding a lat and lon column to the output you can switch between column and marker representation;
-#     in fact WWT allows you to have both on: Think column with beacon at the top for starters. 
-#     This could facilitate comparison of two types, e.g. precip and evap. Also important would be a 
-#     lat/lon-only (no GEOMETRY) option.
-#   - drawing polygons CW versus CCW can have different effects... w/r/t LINESTRING / POLYGON
-#   - dual data: placing layers at 200k meters as the pedestal (with LINESTRING) may actually obviate the need for relief because
-#     at that height it just looks mostly like a shell where the color-coding is carrying most of the information. Anyway having
-#     the option to put something Way Up There is a nice way of creating a differentiation / comparison context.
-#   - unexplored idea: Make alt and color from different columns
-#   - create pairs of indicators in each cell (splitting the real estate) but I doubt this will work.
-#   - solid color (no altitude coding) would also give a simpler way of comparing two types. The easiest way to do this is in WWT
+# kilroy items that could be done better or explored
+#   - drawing polygons CW versus CCW (or what corner you start on) may have different effects
+#   - All types should be possible to place as LINESTRING rather than POLYGON to get rid of the pedestals
+#   - Synthesize altitude and color from distinct columns
+#   - solid color (no altitude coding) would give type comparison at the risk of clutter.
 #       . turn off the color column
 #       . right-click the layer and set a color for it (white by default)
-#   - give the program some command line arguments
+#   - give the program some command line arguments: Particularly to choose data type and marker preference
+#
 
 ###################
 #
@@ -36,17 +30,16 @@ from os.path import isfile, join
 ###################
 
 # choose precip = 3, evap = 4, runoff = 5, baseflow = 6
-dataTypeIndex = 6
+dataTypeIndex = 3
 
-# command line arguments; pulled up from 'buried in the code'
 # Data grab will commence on calendar year (1950 + yearsSkip)
-yearsSkip = 3
+yearsSkip = 5
 
 # we read every (linesDaySkip + 1)'th day of data and skip the remainder
-linesDaySkip = 2
+linesDaySkip = 3
 
 # This code only gets a year or two of data
-yearsGet = 1
+yearsGet = 10
 
 # geographic grid spacing: hardcoded (kilroy) to be just under perfect
 dlat = 0.08
@@ -61,17 +54,22 @@ drawOnlySignificantData = True
 
 # turn this on (True) to draw data as markers rather than as GEOMETRY Well Known Text
 drawDataAsMarkers = True
+drawDataAsGeometry = True
+drawGeometryAsLinestring = True
 
 # in the case where we don't want to draw "no precip" or "no runoff" or "no base flow" this threshold is used as the
 #   cutoff. It doesn't really make sense for evap; a different scheme would be wanted there (and a different pedestal)
-significanceThreshold = [0., 0., 0., 0.2, -10.0, 0.2, 0.01]
+# Recall order is precip evap runoff baseflow
+significanceThreshold = [0.4, -10.0, 0.4, 0.04]
 
 # pedestals correspond in indices 3, 4, 5 and 6 to respectively precip, evap (+/-), runoff and base flow
 # They are altitudes in meters for displaying the data above the terrain in WWT
-pedestals = [0., 0., 0., 6000.0, 200000.0, 6000.0, 6000.0]
+# Recall order is precip evap runoff baseflow
+pedestals = [6000.0, 200000.0, 6000.0, 6000.0]
 
 # not used but anticipating choosing to put a shell version of a data type very high
-shellPedestals = [0., 0., 0., 200000.0, 200000.0, 200000.0, 200000.0]
+# Recall order is precip evap runoff baseflow
+# shellPedestals = [200000.0, 200000.0, 200000.0, 200000.0]
 
 # component path and filename info
 rootdir = "C:\\Users\\fatla_000\\Documents\\"
@@ -84,15 +82,15 @@ qualifier = "fluxes"
 # corresponding to precip / evap / runoff / base flow. So you have to choose one
 # of those four indices: 3, 4, 5 or 6 as 'dataTypeIndex'. Everything follows from
 # there. One may wish to modify the intrinsic scaling.
-dataTypeScaleList = [0., 0., 0., 1000.0, 10000.0, 1000.0, 10000.0]
+dataTypeScaleList = [500.0, 10000.0, 500.0, 5000.0]
 dataTypeNameList = ['year', 'month', 'day', 'precip', 'evap', 'runoff', 'baseflow']
 
 # the color coding is based on the data column of interest (a3/a4/a5/a6) which becomes altitude
 # it *could* be done based on a different column than the altitude at the risk of being confusing
 colors = ['red','orange','green','cyan','blue','white']
 nColors = len(colors)
-colorIntervals = [0., 0., 0., 3000., 5000., 3000., 3000.]
-colorInterval = colorIntervals[dataTypeIndex]
+colorIntervals = [6000., 5000., 6000., 6000.]
+colorInterval = colorIntervals[dataTypeIndex-3]
 
 
 ########################
@@ -103,15 +101,15 @@ colorInterval = colorIntervals[dataTypeIndex]
 
 # choose between MULTIPOLYGON and MULTILINESTRING: At the moment tied to the data type chosen...
 geomType = 'MULTIPOLYGON'
-if dataTypeIndex == 4: geomType = 'MULTILINESTRING'
+if drawGeometryAsLinestring: geomType = 'MULTILINESTRING'
 
 # place the data on a pedestal to get it up above most of the topography
-pedestal = pedestals[dataTypeIndex]
+pedestal = pedestals[dataTypeIndex-3]
 
 # For cases / indices 3, 5 and 6 the data are zero or positive so we simply work from the pedestal up.
 # For case / index 4 = evap the data are positive or negative so we set a floor based on seven colors
-floors = [0., 0., 0., pedestals[3], pedestals[4] - 3.0*colorIntervals[4], pedestals[5], pedestals[6]]
-floor = floors[dataTypeIndex]
+floors = [pedestals[0], pedestals[1] - 3.0*colorIntervals[1], pedestals[2], pedestals[3]]
+floor = floors[dataTypeIndex - 3]
 
 # used to calculate the color to use for a particular cell
 colorDC = floor
@@ -124,7 +122,7 @@ fullpathdir = rootdir + datadir + domaindir
 outfileBase = 'vicsort_' + dataTypeNameList[dataTypeIndex] + '_' + str(1950 + yearsSkip) + '_' + str(yearsGet) + '_'
 
 # Get the data-to-altitude scale factor from a list of them
-dataTypeScale = dataTypeScaleList[dataTypeIndex]
+dataTypeScale = dataTypeScaleList[dataTypeIndex-3]
 
 
 ########################
@@ -304,7 +302,7 @@ for i in range(len(flux)):
         if isnan(value): value = 0.0
 
         if drawOnlySignificantData:
-            if value > significanceThreshold[dataTypeIndex]:
+            if value > significanceThreshold[dataTypeIndex-3]:
                 extendRows(pedestal, value, dataTypeScale, colorDC, colorInterval, nColors, lon[i], lat[i], int(a[0]), int(a[1]), int(a[2]), colors, rows)
         else:
             extendRows(pedestal, value, dataTypeScale, colorDC, colorInterval, nColors, lon[i], lat[i], int(a[0]), int(a[1]), int(a[2]), colors, rows)
@@ -321,13 +319,17 @@ for i in range(len(flux)):
         if outCounter < 10: sequentialExtension = '0' + str(outCounter)
         else: sequentialExtension = str(outCounter)
 
+        if drawDataAsMarkers: drawExtension = '_mrkr'
+        else:                 drawEstension = '_geom'
+
         outCounter += 1
         
-        outName = fullpathdir + outfileBase + sequentialExtension + '.csv'
+        outNameMarkers = fullpathdir + outfileBase + sequentialExtension + '_mrkr' + '.csv'
 
         if drawDataAsMarkers:
              WriteCSVFileWithLonLat(outName, rows, "lon,lat,date,alt,color")
-        else:
+
+        if drawDataAsGeometry:
             WriteCSVFileWithGEOMETRY(outName, rows, "GEOMETRY,date,alt,color", dlonScale, dlatScale, geomType)
         
         # clear the rows[] list
