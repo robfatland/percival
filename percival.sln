@@ -42,6 +42,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		percival_notes.txt = percival_notes.txt
 		images\Python and Azure Tools.png = images\Python and Azure Tools.png
 		data\R5903601_130.nc = data\R5903601_130.nc
+		images\Rainbow Droplet Diagram.png = images\Rainbow Droplet Diagram.png
 		IPython Notebooks\Rainbow.ipynb = IPython Notebooks\Rainbow.ipynb
 		images\region of interest bing maps overlay surface salinity orange colormap.png = images\region of interest bing maps overlay surface salinity orange colormap.png
 		images\region of interest with validation moorings indicated.png = images\region of interest with validation moorings indicated.png
