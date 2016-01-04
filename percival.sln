@@ -89,6 +89,8 @@ Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "araldif2", "araldif2\araldi
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "ZeemanDataCleaner", "ZeemanDataCleaner\ZeemanDataCleaner.pyproj", "{249CD32C-5265-48B6-AB8C-6EF76D80BECC}"
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "MS14Consolidate", "MS14Consolidate\MS14Consolidate.pyproj", "{A944E006-D5BA-46CC-A64F-C3713CB99D49}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -133,6 +135,8 @@ Global
 		{EE5A5E6D-C764-4171-AD5C-F711A73BABDF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{249CD32C-5265-48B6-AB8C-6EF76D80BECC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{249CD32C-5265-48B6-AB8C-6EF76D80BECC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A944E006-D5BA-46CC-A64F-C3713CB99D49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A944E006-D5BA-46CC-A64F-C3713CB99D49}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
