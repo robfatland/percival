@@ -127,24 +127,24 @@ indexString = 'Index'
 measMZString = 'Meas_m/z'
 
 # These are the input file headers we expect to find at some location in the column sequence
-standardHeaders = [datasetIDString, tableIDString, nrMatchesString, meanMassString, \
+stdHdrs = [datasetIDString, tableIDString, nrMatchesString, meanMassString, \
     iodineString, ironString, sodiumString, chlorineString, phosphorousString, \
     sulfurString, oxygenString, nitrogenString, hydrogenString, carbonString, \
     formulaString, indexString, measMZString]
 
 # These are the column indices of those same standard headers... to be populated below
-standardIndices = []
+stdIndcs = []
 
 # These will be the output 'standardized' columns using the same column names as above
-standardOutputColumns = [nrMatchesString, meanMassString, iodineString, ironString, sodiumString, \
+stdOutCols = [nrMatchesString, meanMassString, iodineString, ironString, sodiumString, \
     chlorineString, phosphorousString, sulfurString, oxygenString, nitrogenString, hydrogenString, \
     carbonString, formulaString, measMZString]
 
-# The list of standard header indices will be in the same order as found above in standardHeaders
-for hdr in standardHeaders:
+# The list of standard header indices will be in the same order as found above in stdHdrs
+for hdr in stdHdrs:
     if hdr in headers:
         thisIndex = headers.index(hdr)
-        standardIndices.append(thisIndex)
+        stdIndcs.append(thisIndex)
         print 'header', hdr, 'is found in column', thisIndex
     else:
         print 'Header', hdr, 'could not be found in the header list! halting.'
@@ -159,40 +159,25 @@ for hdr in standardHeaders:
 # From the first row of data we get our first formula. Some of the columns will have NaN and some will have integer
 #   values. The NaN entries tell which samples are not related to this row's ds-tbl entry. 
 
-# nDatasetTables is the count of independent sources of row information
-nDSTables = 0
 
 # DSTable is a tuple (DS, Table) of identifiers
-DSTableID = []
+dtID = []
 
 foundFormulas = []
-foundNrMatches = []
-foundMeanMass = []
-foundI = []
-foundFe = []
-foundNa = []
-foundCl = []
-foundP = []
-foundS = []
-foundO = []
-foundN = []
-foundH = []
-foundC = []
-foundMeasMZ = []
 
 out = []
 
-allDSTableColumnLists = []
-allDSTableOutStartColumn = []
-lenOutputColumns = len(standardOutputColumns)
+dtCols = []                     # list of lists: each giving column values for sample from a unique dt
+dtStarts = []                   # list of starting columns in the output row for same
+nStdOutCols = len(stdOutCols)
 
 nDataLinesRead = 0
 
 def inIndex(s):
-    return standardIndices[standardHeaders.index(s)]
+    return stdIndcs[stdHdrs.index(s)]
 
 def outIndex(s):
-    return standardOutputColumns.index(s)
+    return stdOutCols.index(s)
 
 while True:
 
@@ -213,8 +198,8 @@ while True:
     #   and lots of NaN values for samples associated with other DSTables. So:
     #
     #   1. Is this a new DSTable row? If so:
-    #        Add the tuple to DSTableID
-    #        Append a list of all the data column numbers to allDSTableColumnLists[]
+    #        Add the tuple to dtID
+    #        Append a list of all the data column numbers to dtCols[]
     #   2. Is this row providing us a new formula? 
     #        a. Yes: 
     #        b. No: 
@@ -224,33 +209,32 @@ while True:
     thisDatasetID = line[inIndex(datasetIDString)]
     thisTableID = line[inIndex(tableIDString)]
 
-    if not (thisDatasetID, thisTableID) in DSTableID:
-        DSTableID.append((thisDatasetID, thisTableID))
+    if not (thisDatasetID, thisTableID) in dtID:
+        dtID.append((thisDatasetID, thisTableID))
 
         # Here is where the valid columns are inferred
-        thisDSTableColumnList = []
+        thisDtCols = []
         
         # nNans = 0
         
         for i in range(nFields):
-            if not i in standardIndices and not line[i].lower() == 'nan':
-                thisDSTableColumnList.append(i)
-            # else: 
-            #     nNans += 1
+            # This conditional skips standard (input) header columns and avoids 'nan' (case and whitespace independent)
+            if not i in stdIndcs and not line[i].rstrip().lower() == 'nan':
+                thisDtCols.append(i)
 
-        allDSTableColumnLists.append(thisDSTableColumnList)
+        dtCols.append(thisDtCols)
 
         # Now sum up the sample counts from all prior DSTables plus the standard headers to 
         #   arrive at 'the column where this DSTable's entries begin' which is given the 
-        #   unwieldy name allDSTableOutStartColumn[]
-        thisStartColumn = lenOutputColumns
-        for i in range(len(allDSTableColumnLists) - 1):
-            thisStartColumn += len(allDSTableColumnLists[i])
-        allDSTableOutStartColumn.append(thisStartColumn)
+        #   unwieldy name dtStarts[]
+        thisStartColumn = nStdOutCols
+        for i in range(len(dtCols) - 1):
+            thisStartColumn += len(dtCols[i])
+        dtStarts.append(thisStartColumn)
 
-        # print '  OY Found', nNans, 'nans,', len(thisDSTableColumnList), 'data columns,', \
-        #     len(standardIndices), 'std cols, sum is ', \
-        #     nNans + len(thisDSTableColumnList) + len(standardIndices), \
+        # print '  OY Found', nNans, 'nans,', len(thisDtCols), 'data columns,', \
+        #     len(stdIndcs), 'std cols, sum is ', \
+        #     nNans + len(thisDtCols) + len(stdIndcs), \
         #     ', compare nFields = ', nFields
 
 
@@ -268,11 +252,11 @@ while True:
 
         # Now let's write all of the standard fields into this row
         # Note nr_matches will be overwritten below
-        for hdr in standardOutputColumns:
+        for hdr in stdOutCols:
             out[len(out)-1][outIndex(hdr)] = line[inIndex(hdr)]
 
     # This index refers to the 'side table' of DSTable tuples: Which one we are using on this in > out
-    thisRowDSTableIndex = DSTableID.index((thisDatasetID, thisTableID))
+    thisRowDSTableIndex = dtID.index((thisDatasetID, thisTableID))
 
     # This index tells us which output row to write this row's data. If we just built a new output row then
     #   it will be that same row; but on revisiting formulas we look up the old row using the formula to find
@@ -280,17 +264,17 @@ while True:
     outRowIndex = foundFormulas.index(thisFormula)
 
     # Now overwrite this output row's default Zeros with the data from the readline.
-    #   allDSTableOutStartColumn[thisRowDSTableIndex] is an out[] row start column corresponding to the good samples
+    #   dtStarts[thisRowDSTableIndex] is an out[] row start column corresponding to the good samples
     #     in this input row.  
-    #   len(allDSTableColumnLists[thisRowDSTableIndex]) is the number of good samples in this row
+    #   len(dtCols[thisRowDSTableIndex]) is the number of good samples in this row
     #     and of course the list itself are the column indices in line[] for those good samples.
-    print 'This row has side table DSTable index', thisRowDSTableIndex, 'and the output row index is', outRowIndex
-    if thisRowDSTableIndex == 8:
-        pass
+    # print 'This row has side table DSTable index', thisRowDSTableIndex, 'and the output row index is', outRowIndex
+    # if thisRowDSTableIndex == 8 or thisRowDSTableIndex == 1:
+    #     pass
 
-    startColumn = allDSTableOutStartColumn[thisRowDSTableIndex]
-    for i in range(len(allDSTableColumnLists[thisRowDSTableIndex])):
-        lineIndex = allDSTableColumnLists[thisRowDSTableIndex][i]
+    startColumn = dtStarts[thisRowDSTableIndex]
+    for i in range(len(dtCols[thisRowDSTableIndex])):
+        lineIndex = dtCols[thisRowDSTableIndex][i]
         if lineIndex >= nFields:
             pass
         out[outRowIndex][startColumn + i] = line[lineIndex]
@@ -299,31 +283,43 @@ f.close()
 
 print 'At the close we have', len(foundFormulas), 'unique formulas'
 
+# The last entry should not have a trailing comma...
+# The out[][] will have zeros rather than correct std entries
+
 # Go through each output row and accumulate nr_matches as the number of non-zero peak entries
 for i in range(len(out)):
     this_row_nr_matches = 0
-    skipOver = len(standardOutputColumns)
+    skipOver = len(stdOutCols)
     for j in range(nFields - skipOver):
         if out[i][j + skipOver] > 0:
             this_row_nr_matches += 1
-    out[i][standardOutputColumns.index(nrMatchesString)] = this_row_nr_matches
+    out[i][stdOutCols.index(nrMatchesString)] = this_row_nr_matches
 
 g = open(oFile, 'w')
-# First let's write a new header
-g.write('formula\n')
+# First let's write a header
+for ohdr in stdHdrs:
+    g.write(ohdr + ',')
+for i in range(len(dtID)):
+    for j in range(len(dtCols[i])):
+        index = dtCols[i][j]
+        g.write(headers[index] + ',')
+g.write('\n')
+
 # Now let's write one row per formula
-for i in range(len(foundFormulas)):
-    g.write(foundFormulas[i] + '\n')
+for i in range(len(out)):
+    for j in range(len(out[i])):
+        g.write(str(out[i][j]) + ',')
+    g.write('\n')
 g.close()
 
 gm = open(mFile, 'w')
-gm.write('dataset-tables,')
-gm.write(str(nDSTables) + '\n')
-for i in range(nDSTables):
+gm.write('num dts,')
+gm.write(str(len(dtID)) + '\n')
+for i in range(len(dtID)):
     gm.write('dataset ID-' + str(i) + ',')
-    gm.write(datasetID[i] + '\n')
+    gm.write(dtID[i][0] + '\n')
     gm.write('table ID-' + str(i) + ',')
-    gm.write(tableID[i] + '\n')
-    gm.write('n sample columns-' + str(i) + ',')
-    gm.write(str(len(allDSTableColumnLists[i])) + '\n')
+    gm.write(dtID[i][1] + '\n')
+    gm.write('num cols-' + str(i) + ',')
+    gm.write(str(len(dtCols[i])) + '\n')
 gm.close()
