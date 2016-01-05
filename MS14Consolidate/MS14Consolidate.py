@@ -1,4 +1,4 @@
-##################################
+﻿##################################
 #
 # This program harmonizes MS1.4 table data from a row query to consolidate rows with the same 
 #   molecular formula.
@@ -80,6 +80,7 @@
 from os import listdir
 from os.path import isfile, join
 import sys
+import numpy as np
 
 
 ####################
@@ -150,7 +151,9 @@ indexIndex = standardHeaders.index(indexString)
 measMZIndex = standardHeaders.index(measMZString)
 
 # standardIndices records the column index in the query results table of the above 'standardized' column names
-standardIndices = []
+standardOutputColumns = [nrMatchesString, meanMassString, iodineString, ironString, sodiumString, \
+    chlorineString, phosphorousString, sulfurString, oxygenString, nitrogenString, hydrogenString, \
+    carbonString, formulaString, measMZString]
 
 # The list of standard header indices will be in the same order as found above in standardHeaders
 for hdr in standardHeaders:
@@ -172,10 +175,10 @@ for hdr in standardHeaders:
 #   values. The NaN entries tell which samples are not related to this row's ds-tbl entry. 
 
 # nDatasetTables is the count of independent sources of row information
-nDatasetTables = 0
-datasetID = []
-tableID = []
-nSampleColumns = []
+nDSTables = 0
+
+# DSTable is a tuple (DS, Table) of identifiers
+DSTableID = []
 
 foundFormulas = []
 foundNrMatches = []
@@ -192,9 +195,14 @@ foundH = []
 foundC = []
 foundMeasMZ = []
 
+out = []
+
+allDSTableColumnLists = []
+
 nDataLinesRead = 0
 
 while True:
+
     l = f.readline()
     if l == "": break
 
@@ -206,23 +214,42 @@ while True:
         print 'oh dear I fear that baby John has fallen in the jam! and this row has the wrong number of entries'
         sys.exit(0)
 
+    # Ok now let's outline the execution after we've broken this next line into a line[] list
+    #   First some of those fields are going to belong to the 'standard list' and the rest fall into
+    #   two camps: Actual non-negative values for the samples associated with this Dataset-Table (DSTable)
+    #   and NaN values for samples associated with other Dataset-Tables. So we proceed in 1 then 2 fashion:
+    #
+    #   1. Is this a new DSTable row? If so we process it:
+    #        Determine all the indices of (non-standard-header) numerical values as a list for this DSTable
+    #   2. Is this row providing us a new formula? 
+    #        a. Yes: 
+    #        b. No: 
+
     # Let's determine if this row features a dataset-table combination we have not yet seen...
     #   And it is to be expected that this will uncover new formulas throughout the depth of the table
     thisDatasetID = line[standardIndices[datasetIDIndex]]
     thisTableID = line[standardIndices[tableIDIndex]]
-    if not (thisDatasetID in datasetID) or not (thisTableID in tableID):
-        datasetID.append(thisDatasetID)
-        tableID.append(thisTableID)
-        nSampleColumns.append(4321)
-        nDatasetTables += 1
-        print '         OY I FOUND A NEW DATASET-TABLE, total is now', nDatasetTables 
 
-        # Here is where the NaNs versus the numbers could be accumulated...
-        thisDSTableColumns = []
+    if not (thisDatasetID, thisTableID) in DSTableID:
+        DSTableID.append((thisDatasetID, thisTableID))
+
+        # Here is where the valid columns are inferred
+        thisDSTableColumnList = []
+        
+        # nNans = 0
+        
         for i in range(nFields):
-            if not i in standardIndices:
-                pass
-                # if is a non-negative number line[i]: thisDSTableColumns.append(i)
+            if not i in standardIndices and not line[i].lower() == 'nan':
+                thisDSTableColumnList.append(i)
+            # else: 
+            #     nNans += 1
+
+        allDSTableColumnLists.append(thisDSTableColumnList)
+
+        # print '  OY Found', nNans, 'nans,', len(thisDSTableColumnList), 'data columns,', \
+        #     len(standardIndices), 'std cols, sum is ', \
+        #     nNans + len(thisDSTableColumnList) + len(standardIndices), \
+        #     ', compare nFields = ', nFields
 
 
     # At this point we have a split in execution path: If this is a new formula then deal with it as such; or else
@@ -230,16 +257,36 @@ while True:
 
     thisFormula = line[standardIndices[formulaIndex]]
 
-    if thisFormula in foundFormulas:
-        # print 'formula', thisFormula, 'is already known'
-        pass
-    else:
-        print 'found new formula =', thisFormula
+    if not thisFormula in foundFormulas:
         foundFormulas.append(thisFormula)
+
+        # Now we have to set up the new row in the output for this new formula
+        # This sets all peak entries to Zero by default
+        out.append([0] * nFields)
+
+        # Now let's write all of the standard fields into this row
+        # Note nr_matches will be overwritten below
+        for hdr in standardOutputColumns:
+            out[len(out)-1][standardOutputColumns.index(hdr)] = line[standardIndices.index(hdr)]         
+
+    # The index and related calculations are used to place this row's data in the correct output locations
+    thisRowDSTableIndex = DSTableID.index((thisDatasetID, thisTableID))
+
+    # This index tells us which output row to write this row's data
+    outRowIndex = foundFormulas.index(thisFormula)
 
 f.close()
 
 print 'At the close we have', len(foundFormulas), 'unique formulas'
+
+# Go through each output row and accumulate nr_matches as the number of non-zero peak entries
+for i in range(len(out)):
+    this_row_nr_matches = 0
+    skipOver = len(standardOutputColumns)
+    for j in range(nFields - skipOver):
+        if out[i][j + skipOver] > 0:
+            this_row_nr_matches += 1
+    out[i][standardOutputColumns.index(nrMatchesString)] = this_row_nr_matches
 
 g = open(oFile, 'w')
 # First let's write a new header
@@ -251,12 +298,12 @@ g.close()
 
 gm = open(mFile, 'w')
 gm.write('dataset-tables,')
-gm.write(str(nDatasetTables) + '\n')
-for i in range(nDatasetTables):
+gm.write(str(nDSTables) + '\n')
+for i in range(nDSTables):
     gm.write('dataset ID-' + str(i) + ',')
     gm.write(datasetID[i] + '\n')
     gm.write('table ID-' + str(i) + ',')
     gm.write(tableID[i] + '\n')
     gm.write('n sample columns-' + str(i) + ',')
-    gm.write(str(nSampleColumns[i]) + '\n')
+    gm.write(str(len(allDSTableColumnLists[i])) + '\n')
 gm.close()
