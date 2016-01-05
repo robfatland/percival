@@ -300,16 +300,21 @@ g = open(oFile, 'w')
 for ohdr in stdHdrs:
     g.write(ohdr + ',')
 for i in range(len(dtID)):
-    for j in range(len(dtCols[i])):
+    if i < len(dtID) - 1: endPoint = len(dtCols[i])
+    else: endPoint = len(dtCols[i])-1
+    for j in range(endPoint):
         index = dtCols[i][j]
         g.write(headers[index] + ',')
-g.write('\n')
+
+lastIndex = dtCols[len(dtID)-1][len(dtCols[len(dtID)-1])-1]
+g.write(headers[lastIndex] + '\n')
+
 
 # Now let's write one row per formula
 for i in range(len(out)):
-    for j in range(len(out[i])):
+    for j in range(len(out[i])-1):
         g.write(str(out[i][j]) + ',')
-    g.write('\n')
+    g.write(str(out[i][len(out[i])-1]) + '\n')
 g.close()
 
 gm = open(mFile, 'w')
