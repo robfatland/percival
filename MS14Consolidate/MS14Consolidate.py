@@ -1,11 +1,19 @@
 ﻿##################################
 #
-# This program harmonizes MS1.4 table data from a row query to consolidate rows with the same 
-#   molecular formula.
+# This program harmonizes rows from a query results table, specifically data from a row query from
+#   MS Level 1.4 data across multiple datasets. This is called the source table. Here is the program:
+#     - define the structure of the source table
+#     - describe data consolidation (harmonization) across degenerate rows
+#     - describe the output table format
 #
-# We begin with a more detailed statement of the problem at hand and include asides on jargon.
-#   First it would be ideal to write this with no dependence on column order. The columns of the file
-#   need a careful explanation.
+# 
+# This code is written with no assumption on column order in the source table. 
+#
+# There are two types of columns in the source table: A small set of
+#   perfunctory columns with pre-determined header names; and a larger set of columns associated with samples
+#   that are in turn associated with one or more source datasets. A query is used to generate this table; and
+#   the query often includes many datasets (with associated tables) in its search space. 
+# 
 #     The system has any number of Datasets. Each may have relevant "Level 1.4 MS" tables which will be
 #       searched in response to a Row Query. The results are rows from any Dataset + Table combinations that
 #       match the query criteria, appended in a table. 
@@ -112,7 +120,7 @@ datasetIDString = '$DatasetID'
 tableIDString = '$TableID'
 nrMatchesString = 'nr matches'
 meanMassString = 'mean_mass'
-iodineString = 'I'
+intensityString = 'I'
 ironString = 'Fe'
 sodiumString = 'Na'
 chlorineString = 'Cl'
@@ -128,7 +136,7 @@ measMZString = 'Meas_m/z'
 
 # These are the input file headers we expect to find at some location in the column sequence
 stdHdrs = [datasetIDString, tableIDString, nrMatchesString, meanMassString, \
-    iodineString, ironString, sodiumString, chlorineString, phosphorousString, \
+    intensityString, ironString, sodiumString, chlorineString, phosphorousString, \
     sulfurString, oxygenString, nitrogenString, hydrogenString, carbonString, \
     formulaString, indexString, measMZString]
 
@@ -136,7 +144,7 @@ stdHdrs = [datasetIDString, tableIDString, nrMatchesString, meanMassString, \
 stdIndcs = []
 
 # These will be the output 'standardized' columns using the same column names as above
-stdOutCols = [nrMatchesString, meanMassString, iodineString, ironString, sodiumString, \
+stdOutCols = [nrMatchesString, meanMassString, intensityString, ironString, sodiumString, \
     chlorineString, phosphorousString, sulfurString, oxygenString, nitrogenString, hydrogenString, \
     carbonString, formulaString, measMZString]
 
@@ -163,7 +171,7 @@ for hdr in stdHdrs:
 # DSTable is a tuple (DS, Table) of identifiers
 dtID = []
 
-foundFormulas = []
+formulas = []
 
 out = []
 
@@ -181,54 +189,45 @@ def outIndex(s):
 
 while True:
 
+    # read and chop the next line
     l = f.readline()
     if l == "": break
-
     nDataLinesRead += 1
-    # if nDataLinesRead > 10: break
-
     line = l.split(',')
     if len(line) != nFields:
-        print 'oh dear I fear that baby John has fallen in the jam! and this row has the wrong number of entries'
+        print 'oh dear I fear that this row has the wrong number of entries'
         sys.exit(0)
 
-    # Ok now let's outline the execution after we've broken this readline into a line[] list
-    #   First some of those fields are going to belong to the 'standard list' and the rest fall into
-    #   two camps: Actual non-negative values for the samples associated with this DSTable
-    #   and lots of NaN values for samples associated with other DSTables. So:
-    #
-    #   1. Is this a new DSTable row? If so:
-    #        Add the tuple to dtID
-    #        Append a list of all the data column numbers to dtCols[]
-    #   2. Is this row providing us a new formula? 
-    #        a. Yes: 
-    #        b. No: 
+    # Some line[] fields fall under standard headers. The rest are either data or NaN.
+    # Execution is therefore as follows: 
+    #   1. If this is a new dataset-table (dt) entry:
+    #        Add that tuple to dtID
+    #        Append a list of corresponding sample column numbers to dtCols[]
+    #        Track the start column in the output for this set of samples
+    #   2. If this row contains a new formula: Add it
+    #   3. Copy the data in this line in > out
 
-    # Let's determine if this row features a dataset-table combination we have not yet seen...
-    #   And it is to be expected that this will uncover new formulas throughout the depth of the table
+    # Is this a new dataset-table (dt) combination?
     thisDatasetID = line[inIndex(datasetIDString)]
     thisTableID = line[inIndex(tableIDString)]
-
     if not (thisDatasetID, thisTableID) in dtID:
+
         dtID.append((thisDatasetID, thisTableID))
 
-        # Here is where the valid columns are inferred
-        thisDtCols = []
-        
-        # nNans = 0
-        
+        # Here a list of valid columns are inferred: They have legit non-negative values
+        thisDtCols = []                
         for i in range(nFields):
-            # This conditional skips standard (input) header columns and avoids 'nan' (case and whitespace independent)
+
+            # Build this list: skip stdHdr columns and avoid NaNs (ignoring case and whitespace)
             if not i in stdIndcs and not line[i].rstrip().lower() == 'nan':
                 thisDtCols.append(i)
 
+        # Now dtCols[] is up to date
         dtCols.append(thisDtCols)
 
-        # Now sum up the sample counts from all prior DSTables plus the standard headers to 
-        #   arrive at 'the column where this DSTable's entries begin' which is given the 
-        #   unwieldy name dtStarts[]
+        # Bookkeeping: Track both the number of samples and the output start column index for this dt
         thisStartColumn = nStdOutCols
-        for i in range(len(dtCols) - 1):
+        for i in range(len(dtID) - 1):
             thisStartColumn += len(dtCols[i])
         dtStarts.append(thisStartColumn)
 
@@ -238,50 +237,51 @@ while True:
         #     ', compare nFields = ', nFields
 
 
-    # At this point we have a split in execution path: If this is a new formula then deal with it as such; or else
-    #   if this is a known formula then let's assume we have a new Dataset-Table set of entries.
+    # Part 2: If this input row's formula is new: Add it
 
     thisFormula = line[inIndex(formulaString)]
+    if not thisFormula in formulas:
+        formulas.append(thisFormula)
 
-    if not thisFormula in foundFormulas:
-        foundFormulas.append(thisFormula)
-
-        # Now we have to set up the new row in the output for this new formula
-        # This sets all peak entries to Zero by default
+        # Only in the case of a new formula do we add a new output row (full of zeros)
         out.append([0] * nFields)
+        thisOut = len(out) - 1
 
-        # Now let's write all of the standard fields into this row
-        # Note nr_matches will be overwritten below
+        # We can copy all the stdHdr values to this new out[] row; although note that
+        #   nr_matches will be overwritten below. (kilroy) A more robust version of this
+        #   would be replicated below for not-new-formulas: Make sure that the same procedure
+        #   arrives at identical entries: formula, number of carbon, etcetera; all should be 
+        #   consistent with this initial write.
         for hdr in stdOutCols:
-            out[len(out)-1][outIndex(hdr)] = line[inIndex(hdr)]
+            out[thisOut][outIndex(hdr)] = line[inIndex(hdr)]
 
-    # This index refers to the 'side table' of DSTable tuples: Which one we are using on this in > out
-    thisRowDSTableIndex = dtID.index((thisDatasetID, thisTableID))
+    # Part 3: Copy in the valid data into the proper formula out[] row
 
-    # This index tells us which output row to write this row's data. If we just built a new output row then
-    #   it will be that same row; but on revisiting formulas we look up the old row using the formula to find
-    #   the out[] index.  Hence this row is sure to exist: Either it was just created or it is already there.
-    outRowIndex = foundFormulas.index(thisFormula)
+    # This index refers to the dt tuple-ID table, i.e. which one we are using on this in > out
+    dtIndex = dtID.index((thisDatasetID, thisTableID))
 
-    # Now overwrite this output row's default Zeros with the data from the readline.
-    #   dtStarts[thisRowDSTableIndex] is an out[] row start column corresponding to the good samples
-    #     in this input row.  
-    #   len(dtCols[thisRowDSTableIndex]) is the number of good samples in this row
-    #     and of course the list itself are the column indices in line[] for those good samples.
-    # print 'This row has side table DSTable index', thisRowDSTableIndex, 'and the output row index is', outRowIndex
-    # if thisRowDSTableIndex == 8 or thisRowDSTableIndex == 1:
-    #     pass
+    # This index tells us which output row to write this row's data
+    outRowIndex = formulas.index(thisFormula)
 
-    startColumn = dtStarts[thisRowDSTableIndex]
-    for i in range(len(dtCols[thisRowDSTableIndex])):
-        lineIndex = dtCols[thisRowDSTableIndex][i]
-        if lineIndex >= nFields:
-            pass
-        out[outRowIndex][startColumn + i] = line[lineIndex]
+    # Overwrite this output row's Zeros with the data from the readline.
+    #   dtStarts[dtIndex] is the first out[] column for this dt
+    #   len(dtCols[dtIndex]) is the number of good samples in this row (a list of the sample columns for this dt)
+    startColumn = dtStarts[dtIndex]
+    if startColumn < len(stdOutCols):
+        pass
+
+#     for i in range(len(dtCols[dtIndex])):
+#         lineIndex = dtCols[dtIndex][i]
+#         if lineIndex >= nFields:
+#             pass
+#         out[outRowIndex][startColumn + i] = line[lineIndex]
+
+    nCols = len(dtCols[dtIndex])
+    out[outRowIndex][startColumn:startColumn + nCols - 1] = [line[i] for i in dtCols[dtIndex]]
 
 f.close()
 
-print 'At the close we have', len(foundFormulas), 'unique formulas'
+print 'At the close we have', len(formulas), 'unique formulas'
 
 # The last entry should not have a trailing comma...
 # The out[][] will have zeros rather than correct std entries
@@ -295,9 +295,11 @@ for i in range(len(out)):
             this_row_nr_matches += 1
     out[i][stdOutCols.index(nrMatchesString)] = this_row_nr_matches
 
+# Let's write the output file
 g = open(oFile, 'w')
+
 # First let's write a header
-for ohdr in stdHdrs:
+for ohdr in stdOutCols:
     g.write(ohdr + ',')
 for i in range(len(dtID)):
     if i < len(dtID) - 1: endPoint = len(dtCols[i])
@@ -307,14 +309,14 @@ for i in range(len(dtID)):
         g.write(headers[index] + ',')
 
 lastIndex = dtCols[len(dtID)-1][len(dtCols[len(dtID)-1])-1]
-g.write(headers[lastIndex] + '\n')
+g.write(headers[lastIndex].rstrip('\n') + '\n')
 
 
 # Now let's write one row per formula
 for i in range(len(out)):
     for j in range(len(out[i])-1):
-        g.write(str(out[i][j]) + ',')
-    g.write(str(out[i][len(out[i])-1]) + '\n')
+        g.write(str(out[i][j]).rstrip('\n') + ',')
+    g.write(str(out[i][len(out[i])-1]).rstrip('\n') + '\n')
 g.close()
 
 gm = open(mFile, 'w')
