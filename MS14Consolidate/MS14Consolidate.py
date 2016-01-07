@@ -6,83 +6,29 @@
 #     - describe data consolidation (harmonization) across degenerate rows
 #     - describe the output table format
 #
-# 
-# This code is written with no assumption on column order in the source table. 
-#
-# There are two types of columns in the source table: A small set of
-#   perfunctory columns with pre-determined header names; and a larger set of columns associated with samples
-#   that are in turn associated with one or more source datasets. A query is used to generate this table; and
-#   the query often includes many datasets (with associated tables) in its search space. 
-# 
-#     The system has any number of Datasets. Each may have relevant "Level 1.4 MS" tables which will be
-#       searched in response to a Row Query. The results are rows from any Dataset + Table combinations that
-#       match the query criteria, appended in a table. 
-#     The first row of this table is headers that belong in two categories. 
-#       The first header category is a standard set of headers that are external to the data of interest.
-#       The second header category are sample names taken from datasets that have data values of interest. 
-#       We proceed to take these two header categories in sequence.
-#
-#     There are three types of standard headers: 
-#       The dataset header is an identifier that applies to the entire row on which it appears.
-#       The table header is also an identifier that applies to the entire row on which it appeears.
-#       The standard content headers are 15 or so headers that describe the nature of a molecular formula.
-# 
-#     Before proceeding to the next category of headers let's take a moment to describe what the data are.
-#       The remaining headers are as noted sample names taken from datasets. In order to make the table 
-#       rectangular a given row will list all samples from all relevant datasets; but for this row all but
-#       one of the sample collections will register NaN as the data value. For the sample collection (Dataset)
-#       that is relevant to this row the data values are either peak intensities for this molecule or they 
-#       are zero if the peak was not found in that sample. 
-# 
-#     The all-important point then is that the rows are degenerate: The same molecular formula shows up 
-#       multiple times. Suppose that five datasets are searched using a row query; and that each contributes
-#       to the query result. Then five rows of the query result will correspond to the exact same molecular
-#       formula. To make an abbreviated example we suppose that the datasets are called A, B, C, D, E. 
-#       These have respectively dataset identifiers A-DS, B-DS, ... and table identifiers A-Tbl, B-Tbl, ... etc
-#       Finally the sample names (there are two samples per Dataset) are A1, A2, B1, B2, ... E1, E2.
-# 
-#     Now let's consider molecular formula C12H26O10. The table rows for this formula might look like this:
+# There are two types of columns in the source table: A small set of perfunctory columns with pre-determined 
+#   header names; and a larger set of columns associated with samples. These samples are grouped by datasets; 
+#   and the datasets are identified by means of both a dataset ID and a table ID within that dataset. The
+#   identifer tuple (dataset-ID, table-ID) is abbreviated herein as 'dt' for dataset-table.  
 #  
-#     DS-ID,   Tbl-ID,   A1,   A2,   Formula,  mean_mass,   B1,   B2,   C1,   C2,   D1,   D2,   E1,   E2
-#      A-ID,    A-Tbl,    7,    3,  C12H26O10,     330.7,  NaN,  NaN,  NaN,  NaN,  NaN,  NaN,  NaN,  NaN
-#      B-ID,    B-Tbl,  NaN,  NaN,  C12H26O10,     330.7,    5,   10,  NaN,  NaN,  NaN,  NaN,  NaN,  NaN
-#      C-ID,    C-Tbl,  NaN,  NaN,  C12H26O10,     330.7,  NaN,  NaN,    4,    0,  NaN,  NaN,  NaN,  NaN
-#      D-ID,    D-Tbl,  NaN,  NaN,  C12H26O10,     330.7,  NaN,  NaN,  NaN,  NaN,    6,    9,  NaN,  NaN
-#      E-ID,    E-Tbl,  NaN,  NaN,  C12H26O10,     330.7,  NaN,  NaN,  NaN,  NaN,  NaN,  NaN,    1,    1
+# For a given row of the results table the combination of molecular formula and dt ID are unique. However
+#   once a formula shows up once it may reappear in a later row associated with a different dt ID. This is 
+#   a replication of the formula row so now let's describe how to consolidate.
 # 
-#     Note that all five rows have the same formula; they are degenerate with the NaN values filling in the 
-#       space for Dataset/Sample entries that are not referenced in the Dataset ID + Table ID columns. 
-#     Note that the C2 entry in data row 3 is 0. This means that this formula did not appear in the analysis of
-#       sample C2. 
-#     The goal then is to consolidate this set of five rows into a single row as follows: 
-#
-#       Formula,   mean_mass,  A1, A2, B1, B2, C1, C2, D1, D2, E1, E2
-#     C12H26O10,       330.7,   7,  3,  5, 10,  4,  0,  6,  9,  1,  1
+# First suppose that a query result brings in results from N datasets, hence N unique dt-IDs. By and large
+#   this means there will be N rows with a given molecular formula. In the first such row all entries (columns)
+#   with numerical values will be associated with the first dt-ID. The remaining columns will have value 'NaN'.
+#   The second row with this formula (second dt-ID) will have numerical values in columns corresponding to 
+#   that second dataset; and as before the rest of the entries will be NaN. 
 # 
-#     Now this consolidation of five rows into one gets rid of all the NaN values and some of the other redundancy
-#       so that's good; but what is needed is a separate table that tracks the structure of this new table. It 
-#       will list out the source Dataset IDs and Table IDs and for each indpendent Dataset + Table combination it
-#       records how many entries there are. In our example as key-value pairs (keeping comma-separated value form):
-#
-#     Number of Dataset-Table pairs, 5
-#     Dataset ID 1,                  A-ID
-#     Table ID 1,                    A-Tbl
-#     Number of Samples 1,           2
-#     Dataset ID 1,                  B-ID
-#     Table ID 1,                    B-Tbl
-#     Number of Samples 2,           2
-#     Dataset ID 1,                  C-ID
-#     Table ID 1,                    C-Tbl
-#     Number of Samples 3,           2
-#     Dataset ID 1,                  D-ID
-#     Table ID 1,                    D-Tbl
-#     Number of Samples 4,           2
-#     Dataset ID 1,                  E-ID
-#     Table ID 1,                    E-Tbl
-#     Number of Samples 5,           2
+# To consolidate we simply combine all N rows into one row with no NaN values.
 # 
-#     This preserves all of the table ID information without burdening the consolidated table. 
-#
+# The program writes a second output file (which should be JSON but is currently not (kilroy)) which states
+#   how many datasets are involved and then proceeds to give the dt-ID for both the dataset and the table.
+#   This file also provides the number of samples associated with each dataset. 
+# 
+# As a result of this decomposition into two tables the original data can be recovered.
+# 
 #############################################################
 
 from os import listdir
@@ -97,6 +43,7 @@ import numpy as np
 #
 ####################
 
+# The path and data are not part of this Visual Studio Project
 rootdir = "C:\\Users\\fatla_000\\Documents\\"
 datadir = "Data\\"
 domaindir = "BDS\\MS14Consolidate\\"
@@ -105,7 +52,7 @@ iFile = path + 'rowquery.csv'
 oFile = path + 'rq_consol.csv'
 mFile = path + 'rq_consol_metadata.csv'
 
-# open the underway file and skip the header
+# open the query result file
 f = open(iFile)
 h = f.readline()
 headers = h.split(',')
@@ -159,27 +106,22 @@ for hdr in stdHdrs:
         sys.exit()
 
 
-# The strategy is to read through the file once. 
-# I use dataset-table as a bit of jargon to indicate a unique source. 
-# From the header we learn the indices of the various standard headers and by elimination the locations of 
-#   the data columns. 
-# From the header we intentionally ignore the fact that we can learn how many samples are in the first dataset-table.
-# From the first row of data we get our first formula. Some of the columns will have NaN and some will have integer
-#   values. The NaN entries tell which samples are not related to this row's ds-tbl entry. 
+# I use dt to abbreviate dataset-table, a unique source identifier. 
+# From the header we learn the indices of the various standard headers. The remaining headers are proper names for
+#   the samples; and we do the bookkeeping in-flight to make sure those samples can be associated back with their 
+#   source datasets.
 
-
-# DSTable is a tuple (DS, Table) of identifiers
+# dtID is a list of (DS, Table) identifier tuples
 dtID = []
 
+# molecular formulas
 formulas = []
 
+# Output is a list of lists; each being a unique formula
 out = []
 
 dtCols = []                     # list of lists: each giving column values for sample from a unique dt
 dtStarts = []                   # list of starting columns in the output row for same
-nStdOutCols = len(stdOutCols)
-
-nDataLinesRead = 0
 
 def inIndex(s):
     return stdIndcs[stdHdrs.index(s)]
@@ -192,13 +134,12 @@ while True:
     # read and chop the next line
     l = f.readline()
     if l == "": break
-    nDataLinesRead += 1
     line = l.split(',')
     if len(line) != nFields:
         print 'oh dear I fear that this row has the wrong number of entries'
         sys.exit(0)
 
-    # Some line[] fields fall under standard headers. The rest are either data or NaN.
+    # Some line[] fields fall under standard headers. The rest are either numerical data or NaN.
     # Execution is therefore as follows: 
     #   1. If this is a new dataset-table (dt) entry:
     #        Add that tuple to dtID
@@ -207,7 +148,7 @@ while True:
     #   2. If this row contains a new formula: Add it
     #   3. Copy the data in this line in > out
 
-    # Is this a new dataset-table (dt) combination?
+    # Part 1. Is this a new dataset-table (dt) combination?
     thisDatasetID = line[inIndex(datasetIDString)]
     thisTableID = line[inIndex(tableIDString)]
     if not (thisDatasetID, thisTableID) in dtID:
@@ -226,7 +167,7 @@ while True:
         dtCols.append(thisDtCols)
 
         # Bookkeeping: Track both the number of samples and the output start column index for this dt
-        thisStartColumn = nStdOutCols
+        thisStartColumn = len(stdOutCols)
         for i in range(len(dtID) - 1):
             thisStartColumn += len(dtCols[i])
         dtStarts.append(thisStartColumn)
@@ -267,26 +208,18 @@ while True:
     #   dtStarts[dtIndex] is the first out[] column for this dt
     #   len(dtCols[dtIndex]) is the number of good samples in this row (a list of the sample columns for this dt)
     startColumn = dtStarts[dtIndex]
-    if startColumn < len(stdOutCols):
-        pass
 
-#     for i in range(len(dtCols[dtIndex])):
-#         lineIndex = dtCols[dtIndex][i]
-#         if lineIndex >= nFields:
-#             pass
-#         out[outRowIndex][startColumn + i] = line[lineIndex]
-
+    # This writes the stretch of data from line[] to out[][]
     nCols = len(dtCols[dtIndex])
     out[outRowIndex][startColumn:startColumn + nCols - 1] = [line[i] for i in dtCols[dtIndex]]
 
+# close the input file
 f.close()
 
 print 'At the close we have', len(formulas), 'unique formulas'
 
-# The last entry should not have a trailing comma...
-# The out[][] will have zeros rather than correct std entries
-
-# Go through each output row and accumulate nr_matches as the number of non-zero peak entries
+# out[][] now represents our populated new version of the query results table. It needs an adjustment:
+#   Go through each output row and accumulate nr_matches as the number of non-zero peak entries
 for i in range(len(out)):
     this_row_nr_matches = 0
     skipOver = len(stdOutCols)
@@ -308,17 +241,18 @@ for i in range(len(dtID)):
         index = dtCols[i][j]
         g.write(headers[index] + ',')
 
+# finish up the header write with a \n
 lastIndex = dtCols[len(dtID)-1][len(dtCols[len(dtID)-1])-1]
 g.write(headers[lastIndex].rstrip('\n') + '\n')
 
-
-# Now let's write one row per formula
+# Now write one row per formula
 for i in range(len(out)):
     for j in range(len(out[i])-1):
         g.write(str(out[i][j]).rstrip('\n') + ',')
     g.write(str(out[i][len(out[i])-1]).rstrip('\n') + '\n')
 g.close()
 
+# gm is the output metadata file: It describes the source datasets and their samples
 gm = open(mFile, 'w')
 gm.write('num dts,')
 gm.write(str(len(dtID)) + '\n')
