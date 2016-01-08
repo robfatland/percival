@@ -57,6 +57,13 @@ f = open(iFile)
 h = f.readline()
 headers = h.split(',')
 nFields = len(headers)
+print 'There are', nFields, 'header columns'
+for i in range(nFields): headers[i].rstrip()
+nFields1 = len(headers)
+print 'There are now', nFields1, 'header columns'
+if nFields != nFields1:
+    print 'oh they do not match, that is very bad'
+
 print '\n\nThe input file has', nFields, 'data fields.\n'
 
 # The following is the start of a (somewhat labored) attempt to track where everything is 'found'
@@ -135,9 +142,10 @@ while True:
     l = f.readline()
     if l == "": break
     line = l.split(',')
+    for i in range(len(line)): line[i].rstrip()
     if len(line) != nFields:
         print 'oh dear I fear that this row has the wrong number of entries'
-        sys.exit(0)
+
 
     # Some line[] fields fall under standard headers. The rest are either numerical data or NaN.
     # Execution is therefore as follows: 
@@ -185,7 +193,7 @@ while True:
         formulas.append(thisFormula)
 
         # Only in the case of a new formula do we add a new output row (full of zeros)
-        out.append([0] * nFields)
+        out.append(['x'] * nFields)
         thisOut = len(out) - 1
 
         # We can copy all the stdHdr values to this new out[] row; although note that
@@ -227,6 +235,17 @@ for i in range(len(out)):
         if out[i][j + skipOver] > 0:
             this_row_nr_matches += 1
     out[i][stdOutCols.index(nrMatchesString)] = this_row_nr_matches
+
+# kilroy we should also recalculate the I value to make sure that is correct across the entire row, 
+#   non-zero values only
+
+# diagnostic comparing against nFields
+totalColumns = len(stdHdrs)
+for i in range(len(dtCols)):
+    totalColumns += len(dtCols[i])
+print nFields, 'fields versus', totalColumns, 'columns...'
+if nFields != totalColumns:
+    pass
 
 # Let's write the output file
 g = open(oFile, 'w')
