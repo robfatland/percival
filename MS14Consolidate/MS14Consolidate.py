@@ -49,16 +49,54 @@ datadir = "Data\\"
 domaindir = "BDS\\MS14Consolidate\\"
 path = rootdir + datadir + domaindir
 iFile = path + 'rowquery.csv'
+cleanIFile = path + 'rowquery_clean.csv'
 oFile = path + 'rq_consol.csv'
 mFile = path + 'rq_consol_metadata.csv'
 
+if False:
+    f = open(iFile)
+    g = open(cleanIFile, 'w')
+    rowLens = []
+    nRows = 0
+    while True:
+        x = f.readline()
+        if x == "": break
+        nRows += 1
+        r = x.split(',')
+        check1 = len(r)
+        for i in range(len(r)): r[i] = r[i].rstrip()
+        for i in range(len(r)-1):
+            g.write(r[i] + ',')
+        g.write(r[len(r)-1] + '\n')
+        check2 = len(r)
+        if check1 != check2: 
+            pass
+        rowLens.append(len(r))
+
+    f.close()
+    g.close()
+
+    print 'num rows = ', nRows
+    print 'length of rowLens = ', len(rowLens)
+    print 'first row has length', rowLens[0]
+    nDifferentLengths = 0
+    for i in range(nRows - 1):
+        j = i + 1
+        if rowLens[j] != rowLens[0]:
+            print 'rowLens[', j, '] = ', rowLens[j]
+            nDifferentLengths += 1
+
+    print 'Number of deviations from first row length = ', nDifferentLengths
+    print "I honestly don't see what the problem is here."
+
+
 # open the query result file
-f = open(iFile)
+f = open(cleanIFile)
 h = f.readline()
 headers = h.split(',')
 nFields = len(headers)
 print 'There are', nFields, 'header columns'
-for i in range(nFields): headers[i].rstrip()
+for i in range(nFields): headers[i] = headers[i].rstrip()
 nFields1 = len(headers)
 print 'There are now', nFields1, 'header columns'
 if nFields != nFields1:
@@ -136,15 +174,29 @@ def inIndex(s):
 def outIndex(s):
     return stdOutCols.index(s)
 
+outMismatches = 0
+outOfRanges = 0
+
 while True:
 
     # read and chop the next line
     l = f.readline()
     if l == "": break
     line = l.split(',')
-    for i in range(len(line)): line[i].rstrip()
+    for i in range(len(line)): line[i] = line[i].rstrip()
     if len(line) != nFields:
         print 'oh dear I fear that this row has the wrong number of entries'
+
+
+
+
+
+
+
+
+
+
+
 
 
     # Some line[] fields fall under standard headers. The rest are either numerical data or NaN.
@@ -186,6 +238,17 @@ while True:
         #     ', compare nFields = ', nFields
 
 
+
+
+
+
+
+
+
+
+
+
+
     # Part 2: If this input row's formula is new: Add it
 
     thisFormula = line[inIndex(formulaString)]
@@ -194,6 +257,10 @@ while True:
 
         # Only in the case of a new formula do we add a new output row (full of zeros)
         out.append(['x'] * nFields)
+        # print 'append out: nFields', nFields, '; length of new list:', len(out[len(out)-1])
+        if len(out[len(out)-1]) != nFields:
+            print 'boy that is strange!'
+            outMismatches += 1
         thisOut = len(out) - 1
 
         # We can copy all the stdHdr values to this new out[] row; although note that
@@ -202,7 +269,20 @@ while True:
         #   arrives at identical entries: formula, number of carbon, etcetera; all should be 
         #   consistent with this initial write.
         for hdr in stdOutCols:
-            out[thisOut][outIndex(hdr)] = line[inIndex(hdr)]
+            oI = outIndex(hdr)
+            if oI >= nFields:
+                outOfRanges += 1
+            out[thisOut][oI] = line[inIndex(hdr)]
+
+
+
+
+
+
+
+
+
+
 
     # Part 3: Copy in the valid data into the proper formula out[] row
 
@@ -224,17 +304,35 @@ while True:
 # close the input file
 f.close()
 
+
+
+
+
+
+
+
+
+
+
+
 print 'At the close we have', len(formulas), 'unique formulas'
+print 'outOfRanges =', outOfRanges
+print 'outMismatches =', outMismatches
 
 # out[][] now represents our populated new version of the query results table. It needs an adjustment:
 #   Go through each output row and accumulate nr_matches as the number of non-zero peak entries
-for i in range(len(out)):
-    this_row_nr_matches = 0
-    skipOver = len(stdOutCols)
-    for j in range(nFields - skipOver):
-        if out[i][j + skipOver] > 0:
-            this_row_nr_matches += 1
-    out[i][stdOutCols.index(nrMatchesString)] = this_row_nr_matches
+if False:
+    for i in range(len(out)):
+        this_row_nr_matches = 0
+        skipOver = len(stdOutCols)
+        for j in range(nFields - skipOver):
+            if out[i][j + skipOver] > 0:
+                this_row_nr_matches += 1
+        out[i][stdOutCols.index(nrMatchesString)] = this_row_nr_matches
+
+
+
+
 
 # kilroy we should also recalculate the I value to make sure that is correct across the entire row, 
 #   non-zero values only
@@ -245,7 +343,7 @@ for i in range(len(dtCols)):
     totalColumns += len(dtCols[i])
 print nFields, 'fields versus', totalColumns, 'columns...'
 if nFields != totalColumns:
-    pass
+    print 'nFields', nFields, '; whereas total columns', totalColumns
 
 # Let's write the output file
 g = open(oFile, 'w')
@@ -253,22 +351,46 @@ g = open(oFile, 'w')
 # First let's write a header
 for ohdr in stdOutCols:
     g.write(ohdr + ',')
+headerWrites = len(stdOutCols)
+print 'pre writing sample header column names: I have written this many:', headerWrites
+
+nZeroEntries = 0
 for i in range(len(dtID)):
     if i < len(dtID) - 1: endPoint = len(dtCols[i])
     else: endPoint = len(dtCols[i])-1
     for j in range(endPoint):
         index = dtCols[i][j]
-        g.write(headers[index] + ',')
+        if len(headers[index]) == 0:
+            g.write('zymurgy,')
+            nZeroEntries += 1
+        else:
+            g.write(headers[index] + ',')
 
 # finish up the header write with a \n
 lastIndex = dtCols[len(dtID)-1][len(dtCols[len(dtID)-1])-1]
 g.write(headers[lastIndex].rstrip('\n') + '\n')
 
+print 'Number of zero header writes = ', nZeroEntries
+print 'Not counting the last header: ', headers[lastIndex]
+
 # Now write one row per formula
+nNulls = 0
 for i in range(len(out)):
+    if len(out[i]) != nFields:
+        print 'row',i,'has',len(out[i]),'values; compare nFields =', nFields
     for j in range(len(out[i])-1):
-        g.write(str(out[i][j]).rstrip('\n') + ',')
-    g.write(str(out[i][len(out[i])-1]).rstrip('\n') + '\n')
+        g.write(str(out[i][j]) + ',')
+        if len(str(out[i][j])) < 1:
+            print "oops at ij =", i, j
+            g.write('zymurgy,')
+            nNulls += 1
+        else: 
+            g.write(str(out[i][j]) + ',')
+    if len(out[i][len(out[i])-1]) < 1:
+        g.write("zymurgy\n")
+    else:
+        g.write(str(out[i][len(out[i])-1]) + '\n')
+
 g.close()
 
 # gm is the output metadata file: It describes the source datasets and their samples
