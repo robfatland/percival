@@ -36,6 +36,30 @@ from os.path import isfile, join
 import sys
 import numpy as np
 
+###############################
+#
+# debug the out non-rectangle problem
+#
+###############################
+def diagnose(l, s):
+    leader = 'diag: (' + s + '):'
+    print leader, 'length', len(l)
+    if (len(l) > 0):
+        lenFirst = len(l[0])
+        print leader, 'reflen [0] =', lenFirst
+        nAnom = 0
+        firstAnomFound = False
+        for i in range(len(l)):
+            print leader, i, '...', len(l[i])
+            j = len(l[i])
+            if j != lenFirst: 
+                nAnom += 1
+                if not firstAnomFound: 
+                    print leader, 'index of first anom =', i
+                    firstAnomFound = True
+        print leader, 'Anomalies =', nAnom
+    return
+
 
 ####################
 # 
@@ -90,6 +114,8 @@ if False:
     print "I honestly don't see what the problem is here."
 
 
+
+
 # open the query result file
 f = open(cleanIFile)
 h = f.readline()
@@ -97,12 +123,6 @@ headers = h.split(',')
 nFields = len(headers)
 print 'There are', nFields, 'header columns'
 for i in range(nFields): headers[i] = headers[i].rstrip()
-nFields1 = len(headers)
-print 'There are now', nFields1, 'header columns'
-if nFields != nFields1:
-    print 'oh they do not match, that is very bad'
-
-print '\n\nThe input file has', nFields, 'data fields.\n'
 
 # The following is the start of a (somewhat labored) attempt to track where everything is 'found'
 #   in the row query results table...
@@ -165,6 +185,8 @@ formulas = []
 # Output is a list of lists; each being a unique formula
 out = []
 
+diagnose(out, 'A')
+
 dtCols = []                     # list of lists: each giving column values for sample from a unique dt
 dtStarts = []                   # list of starting columns in the output row for same
 
@@ -184,6 +206,7 @@ while True:
     if l == "": break
     line = l.split(',')
     for i in range(len(line)): line[i] = line[i].rstrip()
+
     if len(line) != nFields:
         print 'oh dear I fear that this row has the wrong number of entries'
 
@@ -242,7 +265,7 @@ while True:
 
 
 
-
+    diagnose(out, '    pre-append')
 
 
 
@@ -256,12 +279,21 @@ while True:
         formulas.append(thisFormula)
 
         # Only in the case of a new formula do we add a new output row (full of zeros)
+        thisOutIndex = len(out) - 1
         out.append(['x'] * nFields)
+
+        diagnose(out, 'post append')
+
+
+        if len(out) > 3:
+            print 'pausing'
+
         # print 'append out: nFields', nFields, '; length of new list:', len(out[len(out)-1])
         if len(out[len(out)-1]) != nFields:
             print 'boy that is strange!'
             outMismatches += 1
         thisOut = len(out) - 1
+
 
         # We can copy all the stdHdr values to this new out[] row; although note that
         #   nr_matches will be overwritten below. (kilroy) A more robust version of this
@@ -273,14 +305,6 @@ while True:
             if oI >= nFields:
                 outOfRanges += 1
             out[thisOut][oI] = line[inIndex(hdr)]
-
-
-
-
-
-
-
-
 
 
 
@@ -307,7 +331,7 @@ f.close()
 
 
 
-
+diagnose(out, 'C')
 
 
 
@@ -392,6 +416,8 @@ for i in range(len(out)):
         g.write(str(out[i][len(out[i])-1]) + '\n')
 
 g.close()
+
+diagnose(out, 'C')
 
 # gm is the output metadata file: It describes the source datasets and their samples
 gm = open(mFile, 'w')
