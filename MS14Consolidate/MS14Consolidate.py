@@ -1,65 +1,70 @@
 ﻿##################################
 #
 # This program harmonizes rows from a query results table, specifically data from a row query from
-#   MS Level 1.4 data across multiple datasets. This is called the source table. Here is the program:
-#     - define the structure of the source table
-#     - describe data consolidation (harmonization) across degenerate rows
-#     - describe the output table format
+#   MS Level 1.4 data across multiple datasets. This is called the source table. This documentation will...
+#     - ...define the structure of the source table
+#     - ...describe data consolidation (harmonization) across degenerate rows
+#     - ...describe the output table format
 #
 # There are two types of columns in the source table: A small set of perfunctory columns with pre-determined 
-#   header names; and a larger set of columns associated with samples. These samples are grouped by datasets; 
-#   and the datasets are identified by means of both a dataset ID and a table ID within that dataset. The
-#   identifer tuple (dataset-ID, table-ID) is abbreviated herein as 'dt' for dataset-table.  
+#   header names; and a larger set of columns associated with samples. These latter (sample columns) are grouped 
+#   by datasets; so let's start with datasets.
+# 
+# In BDS a Dataset is a unit of data published by a researcher. It is typically associated with a particular study
+#   and this involves collections of water containing Dissolved Organic Matter (DOM). Each unique water source is 
+#   a 'carboy' from which multiple samples may be drawn. Samples, then, are the atomic unit of a BDS dataset and
+#   they are given unique names within that dataset. 
+# 
+# In BDS we operate in terms of tables; so Datasets progress upwards in levels by means of tables. In the case
+#   of this program the BDS accommodates FTICR-MS (high resolution mass spectrometry) sample data and processes 
+#   that to Level 1.4. A scientist then queries this data to produce a set of output rows from source tables
+#   at a particular level. Hence the identifier tuple (dataset, table) is sufficient to pinpoint the source of
+#   a query results table row. We abbreviate that in this code as 'dt' for 'dataset-table identifier'.
+# 
+# Since the query could span many datasets the formula (for example) C10H12O3 could be found multiple times in
+#   different datasets, producing redundant formula rows with different dt values. This degeneracy is not really
+#   helpful for a scientist trying to analyze this table; so this program consolidates those rows into a single 
+#   row to remove the degeneracy.  
 #  
-# For a given row of the results table the combination of molecular formula and dt ID are unique. However
-#   once a formula shows up once it may reappear in a later row associated with a different dt ID. This is 
-#   a replication of the formula row so now let's describe how to consolidate.
+# Let's dispense with what is described above as the small set of perfunctory columns. There are 17 of these
+#   perfunctory values in each row, taken out of order in a more logical sequence:
+#     dataset                      -- the dataset identifier for this row (system data; generally not human-useful)
+#     table                        -- the table identifier for this row (system data; generally not human-useful)
+#     formula                      -- the molecular formula for this row
+#     nr_matches                   -- the number of occurrences of samples in this row where this formula-peak was found
+#     Fe, S, P, Na, Cl, H, N, O, C -- the number of corresponding atoms found in the formula
+#     I                            -- the mean intensity of sample intensities in this row
+#     Meas_m/z                     -- mass / charge ratio (and charge is 1; so effectively formula mass in Daltons)
+#     mean_mass                    -- calculated mass from the formula (?)
+#     Index                        -- I forget what this is at the moment
+#
+# Of these 17 only 14 are retained in the output table rows. We sideline dataset and table as described below 
+#   and ignore the Index column in the output.
 # 
-# First suppose that a query result brings in results from N datasets, hence N unique dt-IDs. By and large
-#   this means there will be N rows with a given molecular formula. In the first such row all entries (columns)
-#   with numerical values will be associated with the first dt-ID. The remaining columns will have value 'NaN'.
-#   The second row with this formula (second dt-ID) will have numerical values in columns corresponding to 
-#   that second dataset; and as before the rest of the entries will be NaN. 
+# Now we can return to the sample columns that comprise the rest of the query results table. As noted there will
+#   be repeated rows for a given formula since that formula will tend to appear in many of the source datasets.
+#   In a given input row the valid samples will have numerical values in their corresponding columns. Other 
+#   columns will have value 'NaN'. 
 # 
-# To consolidate we simply combine all N rows into one row with no NaN values.
+# Suppose there are N such repeated rows all with the same molecular formula. To consolidate we simply combine 
+#   them into one row with no NaN values.
 # 
 # The program writes a second output file (which should be JSON but is currently not (kilroy)) which states
-#   how many datasets are involved and then proceeds to give the dt-ID for both the dataset and the table.
-#   This file also provides the number of samples associated with each dataset. 
+#   how many datasets are involved and then proceeds to give the dt ID for both the dataset and the table.
+#   This file also provides the number of samples associated with each dataset. Hence this program takes one
+#   input file (query results table) and produces two output files: Consolidated query results as a table and
+#   a dt listing as text. The original dataset-table sources could if necessary be recovered from this data
+#   given this fact: The output column sequence for the output consolidated table is:
 # 
-# As a result of this decomposition into two tables the original data can be recovered.
+#     14 perfunctory columns followed by...
+#     Data columns from the  first dt as listed in the second output file followed by...
+#     Data columns from the second dt as listed in the second output file followed by... 
+#     ...
+#     Data columns from the last dt as found in the second output file.
 # 
 #############################################################
 
-from os import listdir
-from os.path import isfile, join
 import sys
-import numpy as np
-
-###############################
-#
-# debug the out non-rectangle problem
-#
-###############################
-def diagnose(l, s):
-    leader = 'diag: (' + s + '):'
-    print leader, 'length', len(l)
-    if (len(l) > 0):
-        lenFirst = len(l[0])
-        print leader, 'reflen [0] =', lenFirst
-        nAnom = 0
-        firstAnomFound = False
-        for i in range(len(l)):
-            print leader, i, '...', len(l[i])
-            j = len(l[i])
-            if j != lenFirst: 
-                nAnom += 1
-                if not firstAnomFound: 
-                    print leader, 'index of first anom =', i
-                    firstAnomFound = True
-        print leader, 'Anomalies =', nAnom
-    return
-
 
 ####################
 # 
@@ -113,15 +118,12 @@ if False:
     print 'Number of deviations from first row length = ', nDifferentLengths
     print "I honestly don't see what the problem is here."
 
-
-
-
 # open the query result file
 f = open(cleanIFile)
 h = f.readline()
 headers = h.split(',')
 nFields = len(headers)
-print 'There are', nFields, 'header columns'
+print 'There are', nFields, 'input header columns'
 for i in range(nFields): headers[i] = headers[i].rstrip()
 
 # The following is the start of a (somewhat labored) attempt to track where everything is 'found'
@@ -171,6 +173,8 @@ for hdr in stdHdrs:
         sys.exit()
 
 
+nOutFields = nFields - len(stdHdrs) + len(stdOutCols)
+
 # I use dt to abbreviate dataset-table, a unique source identifier. 
 # From the header we learn the indices of the various standard headers. The remaining headers are proper names for
 #   the samples; and we do the bookkeeping in-flight to make sure those samples can be associated back with their 
@@ -212,16 +216,6 @@ while True:
 
 
 
-
-
-
-
-
-
-
-
-
-
     # Some line[] fields fall under standard headers. The rest are either numerical data or NaN.
     # Execution is therefore as follows: 
     #   1. If this is a new dataset-table (dt) entry:
@@ -243,7 +237,7 @@ while True:
         for i in range(nFields):
 
             # Build this list: skip stdHdr columns and avoid NaNs (ignoring case and whitespace)
-            if not i in stdIndcs and not line[i].rstrip().lower() == 'nan':
+            if not i in stdIndcs and not line[i].lower() == 'nan':
                 thisDtCols.append(i)
 
         # Now dtCols[] is up to date
@@ -255,22 +249,6 @@ while True:
             thisStartColumn += len(dtCols[i])
         dtStarts.append(thisStartColumn)
 
-        # print '  OY Found', nNans, 'nans,', len(thisDtCols), 'data columns,', \
-        #     len(stdIndcs), 'std cols, sum is ', \
-        #     nNans + len(thisDtCols) + len(stdIndcs), \
-        #     ', compare nFields = ', nFields
-
-
-
-
-
-
-    diagnose(out, '    pre-append')
-
-
-
-
-
 
     # Part 2: If this input row's formula is new: Add it
 
@@ -280,16 +258,13 @@ while True:
 
         # Only in the case of a new formula do we add a new output row (full of zeros)
         thisOutIndex = len(out) - 1
-        out.append(['x'] * nFields)
+        out.append([0] * nOutFields)
 
-        diagnose(out, 'post append')
+        # if len(out) > 3:
+        #     print 'pausing'
 
-
-        if len(out) > 3:
-            print 'pausing'
-
-        # print 'append out: nFields', nFields, '; length of new list:', len(out[len(out)-1])
-        if len(out[len(out)-1]) != nFields:
+        # print 'append out: nOutFields', nOutFields, '; length of new list:', len(out[len(out)-1])
+        if len(out[len(out)-1]) != nOutFields:
             print 'boy that is strange!'
             outMismatches += 1
         thisOut = len(out) - 1
@@ -302,7 +277,7 @@ while True:
         #   consistent with this initial write.
         for hdr in stdOutCols:
             oI = outIndex(hdr)
-            if oI >= nFields:
+            if oI >= nOutFields:
                 outOfRanges += 1
             out[thisOut][oI] = line[inIndex(hdr)]
 
@@ -323,20 +298,24 @@ while True:
 
     # This writes the stretch of data from line[] to out[][]
     nCols = len(dtCols[dtIndex])
-    out[outRowIndex][startColumn:startColumn + nCols - 1] = [line[i] for i in dtCols[dtIndex]]
+
+    # diagnose(out, 'pre offense...')
+
+
+    # Python quiz: Why does the following line insert an extra element in out[][]?
+    # out[outRowIndex][startColumn:startColumn + nCols - 1] = [line[i] for i in dtCols[dtIndex]]
+    for i in range(len(dtCols[dtIndex])):
+        j = dtCols[dtIndex][i]
+        out[outRowIndex][startColumn + i] = line[j]
+
+    # diagnose(out, '    post offense...')
+
 
 # close the input file
 f.close()
 
 
-
-
-diagnose(out, 'C')
-
-
-
-
-
+# diagnose(out, 'C')
 
 
 print 'At the close we have', len(formulas), 'unique formulas'
@@ -346,10 +325,10 @@ print 'outMismatches =', outMismatches
 # out[][] now represents our populated new version of the query results table. It needs an adjustment:
 #   Go through each output row and accumulate nr_matches as the number of non-zero peak entries
 if False:
+    skipOver = len(stdOutCols)
     for i in range(len(out)):
         this_row_nr_matches = 0
-        skipOver = len(stdOutCols)
-        for j in range(nFields - skipOver):
+        for j in range(nOutFields - skipOver):
             if out[i][j + skipOver] > 0:
                 this_row_nr_matches += 1
         out[i][stdOutCols.index(nrMatchesString)] = this_row_nr_matches
@@ -361,63 +340,58 @@ if False:
 # kilroy we should also recalculate the I value to make sure that is correct across the entire row, 
 #   non-zero values only
 
-# diagnostic comparing against nFields
-totalColumns = len(stdHdrs)
-for i in range(len(dtCols)):
-    totalColumns += len(dtCols[i])
-print nFields, 'fields versus', totalColumns, 'columns...'
-if nFields != totalColumns:
-    print 'nFields', nFields, '; whereas total columns', totalColumns
+# diagnostic comparing against nOutFields
+totalOutColumns = len(stdOutCols)
+for i in range(len(dtCols)): totalOutColumns += len(dtCols[i])
+print nOutFields, 'out fields ~~~~', totalOutColumns, 'columns...'
 
 # Let's write the output file
 g = open(oFile, 'w')
 
 # First let's write a header
+headerWrites = 0
 for ohdr in stdOutCols:
     g.write(ohdr + ',')
-headerWrites = len(stdOutCols)
-print 'pre writing sample header column names: I have written this many:', headerWrites
+    headerWrites += 1
 
-nZeroEntries = 0
-for i in range(len(dtID)):
-    if i < len(dtID) - 1: endPoint = len(dtCols[i])
-    else: endPoint = len(dtCols[i])-1
-    for j in range(endPoint):
+
+print 'pre data I wrote std headers =', headerWrites
+
+nIDs = len(dtID)
+
+stupidSum = 14
+
+for i in range(nIDs):
+
+    nHdrsThisID = len(dtCols[i])
+
+    stupidSum += nHdrsThisID
+    print 'stupid sum is', stupidSum
+
+    stupidSubSum = 0
+    for j in range(nHdrsThisID):
+        stupidSubSum += 1
         index = dtCols[i][j]
-        if len(headers[index]) == 0:
-            g.write('zymurgy,')
-            nZeroEntries += 1
-        else:
-            g.write(headers[index] + ',')
+        trailingChar = ','
+        if i == nIDs - 1 and j == nHdrsThisID - 1:
+            trailingChar = '\n'
+        g.write(headers[index] + trailingChar)
+        headerWrites += 1
 
-# finish up the header write with a \n
-lastIndex = dtCols[len(dtID)-1][len(dtCols[len(dtID)-1])-1]
-g.write(headers[lastIndex].rstrip('\n') + '\n')
+    print 'stupidSubSum came out', stupidSubSum
 
-print 'Number of zero header writes = ', nZeroEntries
-print 'Not counting the last header: ', headers[lastIndex]
+print '.......post: I have written', headerWrites
 
 # Now write one row per formula
 nNulls = 0
 for i in range(len(out)):
-    if len(out[i]) != nFields:
-        print 'row',i,'has',len(out[i]),'values; compare nFields =', nFields
-    for j in range(len(out[i])-1):
-        g.write(str(out[i][j]) + ',')
-        if len(str(out[i][j])) < 1:
-            print "oops at ij =", i, j
-            g.write('zymurgy,')
-            nNulls += 1
-        else: 
-            g.write(str(out[i][j]) + ',')
-    if len(out[i][len(out[i])-1]) < 1:
-        g.write("zymurgy\n")
-    else:
-        g.write(str(out[i][len(out[i])-1]) + '\n')
+    for j in range(nOutFields):
+        trailingChar = ','
+        if j == nOutFields - 1:
+            trailingChar = '\n'
+        g.write(str(out[i][j]) + trailingChar)
 
 g.close()
-
-diagnose(out, 'C')
 
 # gm is the output metadata file: It describes the source datasets and their samples
 gm = open(mFile, 'w')
