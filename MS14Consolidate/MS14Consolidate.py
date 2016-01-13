@@ -78,48 +78,11 @@ datadir = "Data\\"
 domaindir = "BDS\\MS14Consolidate\\"
 path = rootdir + datadir + domaindir
 iFile = path + 'rowquery.csv'
-cleanIFile = path + 'rowquery_clean.csv'
 oFile = path + 'rq_consol.csv'
 mFile = path + 'rq_consol_metadata.csv'
 
-if False:
-    f = open(iFile)
-    g = open(cleanIFile, 'w')
-    rowLens = []
-    nRows = 0
-    while True:
-        x = f.readline()
-        if x == "": break
-        nRows += 1
-        r = x.split(',')
-        check1 = len(r)
-        for i in range(len(r)): r[i] = r[i].rstrip()
-        for i in range(len(r)-1):
-            g.write(r[i] + ',')
-        g.write(r[len(r)-1] + '\n')
-        check2 = len(r)
-        if check1 != check2: 
-            pass
-        rowLens.append(len(r))
-
-    f.close()
-    g.close()
-
-    print 'num rows = ', nRows
-    print 'length of rowLens = ', len(rowLens)
-    print 'first row has length', rowLens[0]
-    nDifferentLengths = 0
-    for i in range(nRows - 1):
-        j = i + 1
-        if rowLens[j] != rowLens[0]:
-            print 'rowLens[', j, '] = ', rowLens[j]
-            nDifferentLengths += 1
-
-    print 'Number of deviations from first row length = ', nDifferentLengths
-    print "I honestly don't see what the problem is here."
-
 # open the query result file
-f = open(cleanIFile)
+f = open(iFile)
 h = f.readline()
 headers = h.split(',')
 nFields = len(headers)
@@ -176,23 +139,21 @@ for hdr in stdHdrs:
 nOutFields = nFields - len(stdHdrs) + len(stdOutCols)
 
 # I use dt to abbreviate dataset-table, a unique source identifier. 
-# From the header we learn the indices of the various standard headers. The remaining headers are proper names for
-#   the samples; and we do the bookkeeping in-flight to make sure those samples can be associated back with their 
-#   source datasets.
+# The input file header must match the various standard headers (but they can be at any column). 
+# The remaining input file column headers are identifiers for samples.
+# We do bookkeeping in-flight to make sure those samples can be associated back with their 
+#   source datasets primarily through the dtCols[] list of lists. The first index tracks dts, 
+#   the second index tracks column indices (samples) for that dt.
 
-# dtID is a list of (DS, Table) identifier tuples
+# dtID is a list of (Dataset, Table) identifier tuples
 dtID = []
 
 # molecular formulas
 formulas = []
 
-# Output is a list of lists; each being a unique formula
-out = []
-
-diagnose(out, 'A')
-
-dtCols = []                     # list of lists: each giving column values for sample from a unique dt
-dtStarts = []                   # list of starting columns in the output row for same
+out = []            # Output is a list of lists; hence the output consolidated flat table
+dtCols = []         # list of lists: each giving column values for sample from a unique dt
+dtStarts = []       # list of starting columns in the output row for same
 
 def inIndex(s):
     return stdIndcs[stdHdrs.index(s)]
