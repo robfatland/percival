@@ -84,7 +84,7 @@ iFile = path + 'mass_lt_1000.csv'
 oFile = path + 'mass_lt_1000_consol.csv'
 mFile = path + 'mass_lt_1000_metadata.csv'
 
-# open the query result file
+# open the query result input file
 f = open(iFile)
 h = f.readline()
 headers = h.split(',')
