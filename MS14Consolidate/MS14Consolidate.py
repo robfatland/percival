@@ -64,6 +64,9 @@
 # 
 #############################################################
 
+import platform
+print platform.architecture()[0]
+
 import sys
 
 ####################
@@ -77,9 +80,9 @@ rootdir = "C:\\Users\\fatla_000\\Documents\\"
 datadir = "Data\\"
 domaindir = "BDS\\MS14Consolidate\\"
 path = rootdir + datadir + domaindir
-iFile = path + 'rowquery.csv'
-oFile = path + 'rq_consol.csv'
-mFile = path + 'rq_consol_metadata.csv'
+iFile = path + 'mass_lt_1000.csv'
+oFile = path + 'mass_lt_1000_consol.csv'
+mFile = path + 'mass_lt_1000_metadata.csv'
 
 # open the query result file
 f = open(iFile)
@@ -135,7 +138,7 @@ for hdr in stdHdrs:
         print 'Header', hdr, 'could not be found in the header list! halting.'
         sys.exit()
 
-
+# The number of columns in the output table
 nOutFields = nFields - len(stdHdrs) + len(stdOutCols)
 
 # I use dt to abbreviate dataset-table, a unique source identifier. 
@@ -161,12 +164,9 @@ def inIndex(s):
 def outIndex(s):
     return stdOutCols.index(s)
 
-outMismatches = 0
-outOfRanges = 0
-
 while True:
 
-    # read and chop the next line
+    # read and chop the next line; and dump any whitespace including the trailing linefeed
     l = f.readline()
     if l == "": break
     line = l.split(',')
@@ -174,8 +174,6 @@ while True:
 
     if len(line) != nFields:
         print 'oh dear I fear that this row has the wrong number of entries'
-
-
 
     # Some line[] fields fall under standard headers. The rest are either numerical data or NaN.
     # Execution is therefore as follows: 
@@ -221,15 +219,7 @@ while True:
         thisOutIndex = len(out) - 1
         out.append([0] * nOutFields)
 
-        # if len(out) > 3:
-        #     print 'pausing'
-
-        # print 'append out: nOutFields', nOutFields, '; length of new list:', len(out[len(out)-1])
-        if len(out[len(out)-1]) != nOutFields:
-            print 'boy that is strange!'
-            outMismatches += 1
         thisOut = len(out) - 1
-
 
         # We can copy all the stdHdr values to this new out[] row; although note that
         #   nr_matches will be overwritten below. (kilroy) A more robust version of this
@@ -238,11 +228,7 @@ while True:
         #   consistent with this initial write.
         for hdr in stdOutCols:
             oI = outIndex(hdr)
-            if oI >= nOutFields:
-                outOfRanges += 1
             out[thisOut][oI] = line[inIndex(hdr)]
-
-
 
     # Part 3: Copy in the valid data into the proper formula out[] row
 
@@ -256,12 +242,7 @@ while True:
     #   dtStarts[dtIndex] is the first out[] column for this dt
     #   len(dtCols[dtIndex]) is the number of good samples in this row (a list of the sample columns for this dt)
     startColumn = dtStarts[dtIndex]
-
-    # This writes the stretch of data from line[] to out[][]
     nCols = len(dtCols[dtIndex])
-
-    # diagnose(out, 'pre offense...')
-
 
     # Python quiz: Why does the following line insert an extra element in out[][]?
     # out[outRowIndex][startColumn:startColumn + nCols - 1] = [line[i] for i in dtCols[dtIndex]]
@@ -269,87 +250,49 @@ while True:
         j = dtCols[dtIndex][i]
         out[outRowIndex][startColumn + i] = line[j]
 
-    # diagnose(out, '    post offense...')
-
-
 # close the input file
 f.close()
 
-
-# diagnose(out, 'C')
-
-
 print 'At the close we have', len(formulas), 'unique formulas'
-print 'outOfRanges =', outOfRanges
-print 'outMismatches =', outMismatches
 
 # out[][] now represents our populated new version of the query results table. It needs an adjustment:
 #   Go through each output row and accumulate nr_matches as the number of non-zero peak entries
-if False:
-    skipOver = len(stdOutCols)
-    for i in range(len(out)):
-        this_row_nr_matches = 0
-        for j in range(nOutFields - skipOver):
-            if out[i][j + skipOver] > 0:
-                this_row_nr_matches += 1
-        out[i][stdOutCols.index(nrMatchesString)] = this_row_nr_matches
+skipOver = len(stdOutCols)
+for i in range(len(out)):
+    this_row_nr_matches = 0
+    this_row_peak_sum = 0
+    for j in range(nOutFields - skipOver):
+        if out[i][j + skipOver] > 0:
+            this_row_nr_matches += 1
+            this_row_peak_sum += int(out[i][j + skipOver])
+    out[i][stdOutCols.index(nrMatchesString)] = str(this_row_nr_matches)
+    out[i][stdOutCols.index(intensityString)] = str(this_row_peak_sum / this_row_nr_matches)
 
-
-
-
-
-# kilroy we should also recalculate the I value to make sure that is correct across the entire row, 
-#   non-zero values only
-
-# diagnostic comparing against nOutFields
-totalOutColumns = len(stdOutCols)
-for i in range(len(dtCols)): totalOutColumns += len(dtCols[i])
-print nOutFields, 'out fields ~~~~', totalOutColumns, 'columns...'
+# kilroy the above risks a divide by zero
 
 # Let's write the output file
 g = open(oFile, 'w')
 
 # First let's write a header
-headerWrites = 0
 for ohdr in stdOutCols:
     g.write(ohdr + ',')
-    headerWrites += 1
 
-
-print 'pre data I wrote std headers =', headerWrites
-
+# number of unique dts
 nIDs = len(dtID)
 
-stupidSum = 14
-
 for i in range(nIDs):
-
     nHdrsThisID = len(dtCols[i])
-
-    stupidSum += nHdrsThisID
-    print 'stupid sum is', stupidSum
-
-    stupidSubSum = 0
     for j in range(nHdrsThisID):
-        stupidSubSum += 1
         index = dtCols[i][j]
         trailingChar = ','
-        if i == nIDs - 1 and j == nHdrsThisID - 1:
-            trailingChar = '\n'
+        if i == nIDs - 1 and j == nHdrsThisID - 1: trailingChar = '\n'
         g.write(headers[index] + trailingChar)
-        headerWrites += 1
-
-    print 'stupidSubSum came out', stupidSubSum
-
-print '.......post: I have written', headerWrites
 
 # Now write one row per formula
-nNulls = 0
 for i in range(len(out)):
     for j in range(nOutFields):
         trailingChar = ','
-        if j == nOutFields - 1:
-            trailingChar = '\n'
+        if j == nOutFields - 1: trailingChar = '\n'
         g.write(str(out[i][j]) + trailingChar)
 
 g.close()
