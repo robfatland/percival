@@ -4,8 +4,7 @@
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <Name>rob5araldif</Name>
     <RootNamespace>rob5araldif</RootNamespace>
-    <InterpreterId>{a636465b-4304-49bb-b42b-41d19cb68f85}</InterpreterId>
-    <InterpreterVersion>2.7</InterpreterVersion>
+    <InterpreterId>MSBuild|{a636465b-4304-49bb-b42b-41d19cb68f85}|$(MSBuildProjectFullPath)</InterpreterId>
     <NameOfLastUsedPublishProfile>rob5araldif</NameOfLastUsedPublishProfile>
   </PropertyGroup>
   <PropertyGroup>
@@ -20,6 +19,7 @@
     <WorkingDirectory>.</WorkingDirectory>
     <LaunchProvider>Django launcher</LaunchProvider>
     <OutputPath>.</OutputPath>
+    <WebBrowserUrl>http://localhost</WebBrowserUrl>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -144,4 +144,5 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
 </Project>

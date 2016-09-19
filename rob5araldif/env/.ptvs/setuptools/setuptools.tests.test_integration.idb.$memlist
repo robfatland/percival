@@ -1,0 +1,15 @@
+_install_one
+easy_install_pkg
+easy_install
+os
+glob
+test_stevedore
+install_context
+test_virtualenvwrapper
+setup_module
+urlopen
+test_pbr
+Distribution
+pytest
+sys
+test_python_novaclient

@@ -1,0 +1,287 @@
+﻿
+2016-09-16T11:51:28: Start analysis
+2016-09-16T11:51:28: [WARNING] Library was set explicitly - skipping path detection
+2016-09-16T11:51:28: IncludeModulesFromModulePath = win32com
+2016-09-16T11:51:30: Deleting 0 files
+2016-09-16T11:51:30: Scraping builtin modules
+2016-09-16T11:51:30: Command: C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Scripts\python.exe "C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\PythonScraper.py" C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\.ptvs\ "C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\\"
+2016-09-16T11:51:37: Output
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\__builtin__.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\_codecs.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\_collections.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\_functools.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\_heapq.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\_io.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\_locale.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\_md5.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\_random.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\_sha.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\_sha256.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\_sha512.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\_sre.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\_struct.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\_subprocess.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\_warnings.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\_weakref.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\_winreg.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\array.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\binascii.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\cPickle.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\cStringIO.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\cmath.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\datetime.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\errno.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\exceptions.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\future_builtins.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\gc.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\imp.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\itertools.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\marshal.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\math.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\mmap.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\msvcrt.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\nt.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\operator.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\signal.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\sys.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\thread.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\time.idb
+C:\Program Files (x86)\Microsoft Visual Studio\VS15Preview\Common7\IDE\Extensions\Microsoft\Python\Core\CompletionDB\xxsubtype.idb
+2016-09-16T11:51:37: Scraped builtin modules
+2016-09-16T11:51:37: astropy.CallDepth = 0
+2016-09-16T11:51:37: matplotlib.CallDepth = 3
+2016-09-16T11:51:37: pandas.CallDepth = 0
+2016-09-16T11:51:37: sympy.CallDepth = 0
+2016-09-16T11:51:37: Start group "C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\" with 22 files
+2016-09-16T11:51:40: Parsing "abc" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\abc.py")
+2016-09-16T11:51:41: Parsing "codecs" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\codecs.py")
+2016-09-16T11:51:41: Parsing "copy_reg" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\copy_reg.py")
+2016-09-16T11:51:41: Parsing "fnmatch" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\fnmatch.py")
+2016-09-16T11:51:41: Parsing "genericpath" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\genericpath.py")
+2016-09-16T11:51:41: Parsing "linecache" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\linecache.py")
+2016-09-16T11:51:41: Parsing "locale" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\locale.py")
+2016-09-16T11:51:41: Parsing "ntpath" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\ntpath.py")
+2016-09-16T11:51:42: Parsing "os" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\os.py")
+2016-09-16T11:51:42: Parsing "posixpath" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\posixpath.py")
+2016-09-16T11:51:42: Parsing "re" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\re.py")
+2016-09-16T11:51:42: Parsing "site" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site.py")
+2016-09-16T11:51:42: Parsing "sre" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\sre.py")
+2016-09-16T11:51:42: Parsing "sre_compile" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\sre_compile.py")
+2016-09-16T11:51:42: Parsing "sre_constants" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\sre_constants.py")
+2016-09-16T11:51:42: Parsing "sre_parse" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\sre_parse.py")
+2016-09-16T11:51:42: Parsing "stat" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\stat.py")
+2016-09-16T11:51:42: Parsing "types" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\types.py")
+2016-09-16T11:51:42: Parsing "UserDict" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\UserDict.py")
+2016-09-16T11:51:42: Parsing "warnings" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\warnings.py")
+2016-09-16T11:51:42: Parsing "_abcoll" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\_abcoll.py")
+2016-09-16T11:51:42: Parsing "_weakrefset" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\_weakrefset.py")
+2016-09-16T11:51:42: Parsing complete
+2016-09-16T11:51:42: Analyzing "abc"
+2016-09-16T11:51:42: Analyzing "codecs"
+2016-09-16T11:51:42: Analyzing "copy_reg"
+2016-09-16T11:51:42: Analyzing "fnmatch"
+2016-09-16T11:51:42: Analyzing "genericpath"
+2016-09-16T11:51:42: Analyzing "linecache"
+2016-09-16T11:51:42: Analyzing "locale"
+2016-09-16T11:51:42: Analyzing "ntpath"
+2016-09-16T11:51:42: Analyzing "os"
+2016-09-16T11:51:42: Analyzing "posixpath"
+2016-09-16T11:51:42: Analyzing "re"
+2016-09-16T11:51:42: Analyzing "site"
+2016-09-16T11:51:42: Analyzing "sre"
+2016-09-16T11:51:42: Analyzing "sre_compile"
+2016-09-16T11:51:42: Analyzing "sre_constants"
+2016-09-16T11:51:42: Analyzing "sre_parse"
+2016-09-16T11:51:42: Analyzing "stat"
+2016-09-16T11:51:42: Analyzing "types"
+2016-09-16T11:51:42: Analyzing "UserDict"
+2016-09-16T11:51:42: Analyzing "warnings"
+2016-09-16T11:51:42: Analyzing "_abcoll"
+2016-09-16T11:51:42: Analyzing "_weakrefset"
+2016-09-16T11:51:42: Starting analysis of 22 modules
+2016-09-16T11:51:47: Analysis complete
+2016-09-16T11:51:47: Saving group "C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\"
+2016-09-16T11:51:48: End of group "C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\"
+2016-09-16T11:51:48: Start group "C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages" with 2 files
+2016-09-16T11:51:50: Parsing "easy_install" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\easy_install.py")
+2016-09-16T11:51:50: Parsing "six" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\six.py")
+2016-09-16T11:51:50: Parsing complete
+2016-09-16T11:51:50: Analyzing "easy_install"
+2016-09-16T11:51:50: Analyzing "six"
+2016-09-16T11:51:50: Starting analysis of 2 modules
+2016-09-16T11:51:50: Analysis complete
+2016-09-16T11:51:50: Saving group "C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages"
+2016-09-16T11:51:50: End of group "C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages"
+2016-09-16T11:51:50: Start group "C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\pylint" with 10 files
+2016-09-16T11:51:52: Parsing "pylint.config" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\pylint\config.py")
+2016-09-16T11:51:52: Parsing "pylint.epylint" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\pylint\epylint.py")
+2016-09-16T11:51:52: Parsing "pylint.gui" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\pylint\gui.py")
+2016-09-16T11:51:53: Parsing "pylint.interfaces" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\pylint\interfaces.py")
+2016-09-16T11:51:53: Parsing "pylint.lint" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\pylint\lint.py")
+2016-09-16T11:51:53: Parsing "pylint.testutils" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\pylint\testutils.py")
+2016-09-16T11:51:53: Parsing "pylint.utils" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\pylint\utils.py")
+2016-09-16T11:51:53: Parsing "pylint" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\pylint\__init__.py")
+2016-09-16T11:51:53: Parsing "pylint.__main__" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\pylint\__main__.py")
+2016-09-16T11:51:53: Parsing "pylint.__pkginfo__" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\pylint\__pkginfo__.py")
+2016-09-16T11:51:53: Parsing complete
+2016-09-16T11:51:53: Analyzing "pylint.config"
+2016-09-16T11:51:53: Analyzing "pylint.epylint"
+2016-09-16T11:51:53: Analyzing "pylint.gui"
+2016-09-16T11:51:53: Analyzing "pylint.interfaces"
+2016-09-16T11:51:53: Analyzing "pylint.lint"
+2016-09-16T11:51:53: Analyzing "pylint.testutils"
+2016-09-16T11:51:53: Analyzing "pylint.utils"
+2016-09-16T11:51:53: Analyzing "pylint"
+2016-09-16T11:51:53: Analyzing "pylint.__main__"
+2016-09-16T11:51:53: Analyzing "pylint.__pkginfo__"
+2016-09-16T11:51:53: Starting analysis of 10 modules
+2016-09-16T11:51:54: Analysis complete
+2016-09-16T11:51:54: Saving group "C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\pylint"
+2016-09-16T11:51:55: End of group "C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\pylint"
+2016-09-16T11:51:55: Start group "C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools" with 39 files
+2016-09-16T11:51:57: Parsing "setuptools.archive_util" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\archive_util.py")
+2016-09-16T11:51:57: Parsing "setuptools.compat" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\compat.py")
+2016-09-16T11:51:57: Parsing "setuptools.depends" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\depends.py")
+2016-09-16T11:51:57: Parsing "setuptools.dist" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\dist.py")
+2016-09-16T11:51:57: Parsing "setuptools.extension" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\extension.py")
+2016-09-16T11:51:57: Parsing "setuptools.lib2to3_ex" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\lib2to3_ex.py")
+2016-09-16T11:51:57: Parsing "setuptools.msvc9_support" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\msvc9_support.py")
+2016-09-16T11:51:57: Parsing "setuptools.package_index" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\package_index.py")
+2016-09-16T11:51:57: Parsing "setuptools.py26compat" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\py26compat.py")
+2016-09-16T11:51:57: Parsing "setuptools.py27compat" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\py27compat.py")
+2016-09-16T11:51:57: Parsing "setuptools.py31compat" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\py31compat.py")
+2016-09-16T11:51:57: Parsing "setuptools.sandbox" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\sandbox.py")
+2016-09-16T11:51:57: Parsing "setuptools.ssl_support" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\ssl_support.py")
+2016-09-16T11:51:57: Parsing "setuptools.unicode_utils" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\unicode_utils.py")
+2016-09-16T11:51:57: Parsing "setuptools.utils" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\utils.py")
+2016-09-16T11:51:57: Parsing "setuptools.version" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\version.py")
+2016-09-16T11:51:57: Parsing "setuptools.windows_support" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\windows_support.py")
+2016-09-16T11:51:57: Parsing "setuptools" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\__init__.py")
+2016-09-16T11:51:57: Parsing "setuptools.command.alias" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\command\alias.py")
+2016-09-16T11:51:57: Parsing "setuptools.command.bdist_egg" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\command\bdist_egg.py")
+2016-09-16T11:51:57: Parsing "setuptools.command.bdist_rpm" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\command\bdist_rpm.py")
+2016-09-16T11:51:57: Parsing "setuptools.command.bdist_wininst" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\command\bdist_wininst.py")
+2016-09-16T11:51:57: Parsing "setuptools.command.build_ext" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\command\build_ext.py")
+2016-09-16T11:51:57: Parsing "setuptools.command.build_py" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\command\build_py.py")
+2016-09-16T11:51:57: Parsing "setuptools.command.develop" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\command\develop.py")
+2016-09-16T11:51:57: Parsing "setuptools.command.easy_install" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\command\easy_install.py")
+2016-09-16T11:51:57: Parsing "setuptools.command.egg_info" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\command\egg_info.py")
+2016-09-16T11:51:57: Parsing "setuptools.command.install" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\command\install.py")
+2016-09-16T11:51:58: Parsing "setuptools.command.install_egg_info" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\command\install_egg_info.py")
+2016-09-16T11:51:58: Parsing "setuptools.command.install_lib" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\command\install_lib.py")
+2016-09-16T11:51:58: Parsing "setuptools.command.install_scripts" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\command\install_scripts.py")
+2016-09-16T11:51:58: Parsing "setuptools.command.register" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\command\register.py")
+2016-09-16T11:51:58: Parsing "setuptools.command.rotate" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\command\rotate.py")
+2016-09-16T11:51:58: Parsing "setuptools.command.saveopts" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\command\saveopts.py")
+2016-09-16T11:51:58: Parsing "setuptools.command.sdist" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\command\sdist.py")
+2016-09-16T11:51:58: Parsing "setuptools.command.setopt" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\command\setopt.py")
+2016-09-16T11:51:58: Parsing "setuptools.command.test" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\command\test.py")
+2016-09-16T11:51:58: Parsing "setuptools.command.upload_docs" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\command\upload_docs.py")
+2016-09-16T11:51:58: Parsing "setuptools.command" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\command\__init__.py")
+2016-09-16T11:51:58: Parsing complete
+2016-09-16T11:51:58: Analyzing "setuptools.archive_util"
+2016-09-16T11:51:58: Analyzing "setuptools.compat"
+2016-09-16T11:51:58: Analyzing "setuptools.depends"
+2016-09-16T11:51:58: Analyzing "setuptools.dist"
+2016-09-16T11:51:58: Analyzing "setuptools.extension"
+2016-09-16T11:51:58: Analyzing "setuptools.lib2to3_ex"
+2016-09-16T11:51:58: Analyzing "setuptools.msvc9_support"
+2016-09-16T11:51:58: Analyzing "setuptools.package_index"
+2016-09-16T11:51:58: Analyzing "setuptools.py26compat"
+2016-09-16T11:51:58: Analyzing "setuptools.py27compat"
+2016-09-16T11:51:58: Analyzing "setuptools.py31compat"
+2016-09-16T11:51:58: Analyzing "setuptools.sandbox"
+2016-09-16T11:51:58: Analyzing "setuptools.ssl_support"
+2016-09-16T11:51:58: Analyzing "setuptools.unicode_utils"
+2016-09-16T11:51:58: Analyzing "setuptools.utils"
+2016-09-16T11:51:58: Analyzing "setuptools.version"
+2016-09-16T11:51:58: Analyzing "setuptools.windows_support"
+2016-09-16T11:51:58: Analyzing "setuptools"
+2016-09-16T11:51:58: Analyzing "setuptools.command.alias"
+2016-09-16T11:51:58: Analyzing "setuptools.command.bdist_egg"
+2016-09-16T11:51:58: Analyzing "setuptools.command.bdist_rpm"
+2016-09-16T11:51:58: Analyzing "setuptools.command.bdist_wininst"
+2016-09-16T11:51:58: Analyzing "setuptools.command.build_ext"
+2016-09-16T11:51:58: Analyzing "setuptools.command.build_py"
+2016-09-16T11:51:58: Analyzing "setuptools.command.develop"
+2016-09-16T11:51:58: Analyzing "setuptools.command.easy_install"
+2016-09-16T11:51:58: Analyzing "setuptools.command.egg_info"
+2016-09-16T11:51:58: Analyzing "setuptools.command.install"
+2016-09-16T11:51:58: Analyzing "setuptools.command.install_egg_info"
+2016-09-16T11:51:58: Analyzing "setuptools.command.install_lib"
+2016-09-16T11:51:58: Analyzing "setuptools.command.install_scripts"
+2016-09-16T11:51:58: Analyzing "setuptools.command.register"
+2016-09-16T11:51:58: Analyzing "setuptools.command.rotate"
+2016-09-16T11:51:58: Analyzing "setuptools.command.saveopts"
+2016-09-16T11:51:58: Analyzing "setuptools.command.sdist"
+2016-09-16T11:51:58: Analyzing "setuptools.command.setopt"
+2016-09-16T11:51:58: Analyzing "setuptools.command.test"
+2016-09-16T11:51:58: Analyzing "setuptools.command.upload_docs"
+2016-09-16T11:51:58: Analyzing "setuptools.command"
+2016-09-16T11:51:58: Starting analysis of 39 modules
+2016-09-16T11:52:01: Analysis complete
+2016-09-16T11:52:01: Saving group "C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools"
+2016-09-16T11:52:02: End of group "C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools"
+2016-09-16T11:52:02: Start group "C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools" with 23 files
+2016-09-16T11:52:04: Parsing "setuptools.tests.contexts" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\tests\contexts.py")
+2016-09-16T11:52:04: Parsing "setuptools.tests.environment" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\tests\environment.py")
+2016-09-16T11:52:04: Parsing "setuptools.tests.fixtures" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\tests\fixtures.py")
+2016-09-16T11:52:04: Parsing "setuptools.tests.py26compat" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\tests\py26compat.py")
+2016-09-16T11:52:04: Parsing "setuptools.tests.server" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\tests\server.py")
+2016-09-16T11:52:04: Parsing "setuptools.tests.test_bdist_egg" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\tests\test_bdist_egg.py")
+2016-09-16T11:52:04: Parsing "setuptools.tests.test_build_ext" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\tests\test_build_ext.py")
+2016-09-16T11:52:04: Parsing "setuptools.tests.test_develop" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\tests\test_develop.py")
+2016-09-16T11:52:04: Parsing "setuptools.tests.test_dist_info" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\tests\test_dist_info.py")
+2016-09-16T11:52:04: Parsing "setuptools.tests.test_easy_install" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\tests\test_easy_install.py")
+2016-09-16T11:52:04: Parsing "setuptools.tests.test_egg_info" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\tests\test_egg_info.py")
+2016-09-16T11:52:04: Parsing "setuptools.tests.test_find_packages" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\tests\test_find_packages.py")
+2016-09-16T11:52:04: Parsing "setuptools.tests.test_integration" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\tests\test_integration.py")
+2016-09-16T11:52:04: Parsing "setuptools.tests.test_markerlib" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\tests\test_markerlib.py")
+2016-09-16T11:52:04: Parsing "setuptools.tests.test_msvc9compiler" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\tests\test_msvc9compiler.py")
+2016-09-16T11:52:04: Parsing "setuptools.tests.test_packageindex" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\tests\test_packageindex.py")
+2016-09-16T11:52:04: Parsing "setuptools.tests.test_sandbox" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\tests\test_sandbox.py")
+2016-09-16T11:52:04: Parsing "setuptools.tests.test_sdist" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\tests\test_sdist.py")
+2016-09-16T11:52:04: Parsing "setuptools.tests.test_test" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\tests\test_test.py")
+2016-09-16T11:52:04: Parsing "setuptools.tests.test_upload_docs" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\tests\test_upload_docs.py")
+2016-09-16T11:52:04: Parsing "setuptools.tests.test_windows_wrappers" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\tests\test_windows_wrappers.py")
+2016-09-16T11:52:04: Parsing "setuptools.tests.textwrap" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\tests\textwrap.py")
+2016-09-16T11:52:04: Parsing "setuptools.tests" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools\tests\__init__.py")
+2016-09-16T11:52:04: Parsing complete
+2016-09-16T11:52:04: Analyzing "setuptools.tests.contexts"
+2016-09-16T11:52:04: Analyzing "setuptools.tests.environment"
+2016-09-16T11:52:04: Analyzing "setuptools.tests.fixtures"
+2016-09-16T11:52:04: Analyzing "setuptools.tests.py26compat"
+2016-09-16T11:52:04: Analyzing "setuptools.tests.server"
+2016-09-16T11:52:04: Analyzing "setuptools.tests.test_bdist_egg"
+2016-09-16T11:52:04: Analyzing "setuptools.tests.test_build_ext"
+2016-09-16T11:52:04: Analyzing "setuptools.tests.test_develop"
+2016-09-16T11:52:04: Analyzing "setuptools.tests.test_dist_info"
+2016-09-16T11:52:04: Analyzing "setuptools.tests.test_easy_install"
+2016-09-16T11:52:04: Analyzing "setuptools.tests.test_egg_info"
+2016-09-16T11:52:04: Analyzing "setuptools.tests.test_find_packages"
+2016-09-16T11:52:04: Analyzing "setuptools.tests.test_integration"
+2016-09-16T11:52:04: Analyzing "setuptools.tests.test_markerlib"
+2016-09-16T11:52:04: Analyzing "setuptools.tests.test_msvc9compiler"
+2016-09-16T11:52:04: Analyzing "setuptools.tests.test_packageindex"
+2016-09-16T11:52:04: Analyzing "setuptools.tests.test_sandbox"
+2016-09-16T11:52:04: Analyzing "setuptools.tests.test_sdist"
+2016-09-16T11:52:04: Analyzing "setuptools.tests.test_test"
+2016-09-16T11:52:04: Analyzing "setuptools.tests.test_upload_docs"
+2016-09-16T11:52:04: Analyzing "setuptools.tests.test_windows_wrappers"
+2016-09-16T11:52:04: Analyzing "setuptools.tests.textwrap"
+2016-09-16T11:52:04: Analyzing "setuptools.tests"
+2016-09-16T11:52:04: Starting analysis of 23 modules
+2016-09-16T11:52:05: Analysis complete
+2016-09-16T11:52:05: Saving group "C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools"
+2016-09-16T11:52:05: End of group "C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\setuptools"
+2016-09-16T11:52:05: Start group "C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\_markerlib" with 2 files
+2016-09-16T11:52:08: Parsing "_markerlib.markers" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\_markerlib\markers.py")
+2016-09-16T11:52:08: Parsing "_markerlib" ("C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\_markerlib\__init__.py")
+2016-09-16T11:52:08: Parsing complete
+2016-09-16T11:52:08: Analyzing "_markerlib.markers"
+2016-09-16T11:52:08: Analyzing "_markerlib"
+2016-09-16T11:52:08: Starting analysis of 2 modules
+2016-09-16T11:52:08: Analysis complete
+2016-09-16T11:52:08: Saving group "C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\_markerlib"
+2016-09-16T11:52:08: End of group "C:\Users\Rob\Documents\GitHub\percival\rob5araldif\env\Lib\site-packages\_markerlib"
+2016-09-16T11:52:08: Deleting 0 files
