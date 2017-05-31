@@ -1,0 +1,99 @@
+## Introduction to the counting trees problem
+
+
+This section concerns a proof in graph theory taken from Ross Honsberger's
+book _Mathematical Gems III_. I follow the usual pattern of writing out his
+remarks in somewhat more detail with pauses where you are invited to explore.
+
+
+We begin by describing a weighted tree which is a particular type of graph.
+
+
+A graph you may recall is a set of points or vertices connected by lines, also
+called edges. We consider here only connected graphs without cycles; which 
+are called trees. That is, as you trace jumps along edges from one vertex 
+to another to make a path you can never arrive back where you began unless 
+you trace backwards over the edges you have followed. There is no way to 
+loop back to where you started using a different path. That is the 
+definition of a tree graph. 
+
+
+An edge in a tree graph must go between two of the vertices.  If you
+choose any two vertices in the tree and walk along edges from one to the 
+other you find that there is only one path. If there was more than one
+path then that implies a cycle... which as we just stated is not allowed.
+
+
+Incidentally a vertex in the tree that is connected to only one edge and
+therefore only one other vertex is called a leaf.  
+
+
+Question 0. What is the largest tree graph that consists entirely of leaves?
+
+
+Question 1. On a tree graph with $n$ vertices how many different paths are 
+there?  
+
+
+Solution 1.  The question is a counting question so you might guess that 
+it is combinatorics. You'd be right. we will bring in our basic counting 
+machinery in a moment; but first we reason: 
+
+
+Suppose we have a particular graph and we have listed all of the possible 
+paths. (The path from vertex $A$ to vertex $B$ is the same path as its 
+reverse, the path from $B$ to $A$.) Now with the list of all paths 
+in our hand let us combine two ideas. First: Each path has two endpoints 
+(which are vertices). Second: Between any two vertices there lies only 
+one possible path in a tree.  This is a consequence of two things: First
+our rule that the graph is a tree and so does not contain any cycles. 
+Second our rule that the tree graph is connected: There is a path from
+any vertext to any other vertex. 
+
+
+The combining of these two ideas is as follows: Every possible path 
+in the tree matches to a pair of endpoints.  Furthermore every pair of 
+vertices corresponds to a unique path. Therefore if we can count how 
+many pairs of vertices are possible we also count the total number of 
+possible paths. This is simply our counting principle in action: In a 
+set of $n$ objects, each labeled uniquely, how many ways can we select 
+a pair of them? The answer is $n$ choose 2 which is written (n 2). 
+This in turn has a value we can calculate, namely ${n^2-n}{2}$. 
+
+
+Question 2. Verify that (n choose 2) correctly counts all the possible
+paths in trees with zero, 1, 2, 3 and 4 vertices. 
+
+
+Solution 2. The tree with zero vertices is boring (there is nothing
+there) but certainly 0 choose 2 is zero. Similarly 1 choose 2 is zero
+and that is a single vertex tree with no edges (because where would they
+go?) Finally a tree with two vertices is a little more interesting. It
+has one edge; therefore only one path; and properly 2 choose 2 is 1.
+This leaves only 3- and 4- vertex tree graphs. 
+
+There is only one possible tree with three vertices: Two leaf vertices
+connected by a middle non-leaf vertext. Here we can quickly count that
+there are three paths. Happily 3 choose 2 is 3 so again our formula is
+born out. 
+
+
+Lastly what about trees with four vertices? There are a couple of 
+different arrangements that are trees. 
+
+
+
+So far so good with trees but now let us add weights. A weight is a 
+number associated with each edge of the graph.  In fact we can write the
+number next to the edge like this. 
+
+
+!(figure)[figure]
+
+
+Now imagine a tree with weights ... abstractly ... where we walk along 
+a path from one vertext to another. As we go we add up the weights of 
+each edge that we cross. The sum of these weights can be said to be the 
+weight of that path. Remember paths are not permitted to double back on 
+themselves. Now here comes the first question.
+

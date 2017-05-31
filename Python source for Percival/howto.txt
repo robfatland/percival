@@ -1,0 +1,96 @@
+Daddy's guide to UNIX / Linux / Debian / Raspbian and using the 'vi' text editor
+
+
+######################
+#
+# Linux (Raspbian) section
+#
+#####################
+
+When you have a prompt in Linux it means you can type a command. Your prompt tends to look like this: 
+
+pi@raspberrypi ~ $
+
+Here you can find out what is in this directory using 'ls':
+
+pi@raspberrypi ~ $ ls
+
+... and so on. Here are the basic commands: 
+
+Make a directory: mkdir <dir>
+Delete a directory: rmdir <dir>
+
+Delete a file: rm <file>
+
+Where am I?: pwd
+
+Go down a level: cd <dir>
+Go up a level: cd ..
+
+What is here?: ls
+What is in directory <dir>?: ls <dir>
+
+What is in this file?: more <file>
+    I want to see the next line of 'more': <Enter> key
+    I want to see the next page of 'more': <spacebar> key
+    I want to stop seeing 'more': <q> key
+
+
+
+####################
+##
+## Using the vi text editor
+##
+####################
+
+
+From the command line, to edit the file 'boom.py': vi boom.py
+
+
+There are three different editing modes: 
+
+<esc> mode lets me move around and manipulate the text in a meta-way
+	x deletes a character
+	dd deletes a line
+	dw deletes a word
+
+	yyp grabs the current line and copies it below
+
+	ZZ saves the file and exits vi
+
+<insert> mode lets me type in new text
+	i is insert before cursor
+	a is append after cursor
+	o is open a new blankline below
+	O is open a new blankline above
+
+<command> mode lets me issue commands down at the bottom
+
+
+
+junk not used for anything but to make the file longer...
+junk not used for anything but to make the file longer...
+junk not used for anything but to make the file longer...
+junk not used for anything but to make the file longer...
+
+junk noyyyyhgdfgfghjht used for anything but to make the file longer...
+
+sewxervrev
+junk not used for anything but to make the file longer...
+junk not used for anything but to make the file longer...
+
+junk not used for anything but to make the file longer...
+junk not used for anything but to make the file longer...
+junk not used for anything but to make the file longer...
+junk not used for anything but to make the file longer...
+junk not used for anything but to make the file longer...
+junk not used for anytappend modehing but to make the file longer...
+junk not used for anything but to make the file longer...
+junk not used for anything but to make the file longer...
+junk not used for anything but to make the file longer...
+junk not used for anything but to make the file longer...
+junk not used for anything but to make the file longer...
+junk not used for anything but to make the file longer...
+junk not used for anything but to make the file longer...
+
+junk not used for anything but to make the file longer...
