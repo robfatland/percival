@@ -64,6 +64,19 @@ nFiles = edge
 rankList = range(nRanks)
 fileList = range(nFiles)
 
+# A note on nBackups: This is the number of times the recursive 'Move()' method got stuck, i.e.
+#   had no legal moves and had to surrender and back up. This is tracked using a counter and
+#   notice the counter is introduced where necessary as a global variable. I do not understand
+#   why this is so (for example it is needed in the Move() methods but not in the PrintTour()
+#   method!
+#
+# Anyway two further notes: First the value could be expanded to a list ordered by move number
+#   to look for a pattern in where the backups become concentrated. Second using the simple
+#   city-block metric the backups number about 4200. This suggests using a Euclidean metric or
+#   some other additional weighting to see if the heuristic idea can be improved to streamline
+#   the path to the solution. A perfect heuristic would have zero backups.
+nBackups = 0
+
 # An arbitrarily ordered List of possible knight moves as relative (d-file, d-rank)
 jumps = [(-2,-1),(-2, 1),(-1, 2),(1,2),(2,1),(2,-1),(1,-2),(-1,-2)]
 
@@ -121,10 +134,15 @@ def GetClosestCenter(s):
             return (edge/2, edge/2)
 
 # City block distance to the center of the board
+def EuclideanMetric(a):
+    aa = (float(a[0]),float(a[1]))
+    b = (3.5, 3.5)
+    return np.sqrt((a[0]-b[0])*(a[0]-b[0]) + (a[1]-b[1])*(a[1]-b[1]))
+
+# City block distance to the center of the board
 def Metric(a):
     b = GetClosestCenter(a)
     return abs(a[0]-b[0]) + abs(a[1]-b[1])
-
 
 # onboard returns a hypothetical jump location if it is on the board or 'off' (-1, -1) if not
 def OnBoard(s, j):
@@ -145,11 +163,11 @@ def CreateBoard():
                 if next != off:
                     s.destinations.append(next)
                     s.order.append(len(s.destinations) - 1)
-            s.metric = Metric(s.loc)
+            s.metric = EuclideanMetric(s.loc)
             board.append(s)
 
 def PrintTour():
-    print "\n\n\nHi there! I print the tour and then halt!\n\n\n\n"
+    print "\n\n\nHi there! I print the tour -- there were", nBackups, "backups -- and halt!\n\n\n\n"
     for sq in range(len(tour)):
         index = tour[sq]
         print 'move ', sq + 1, ' --> file ', board[index].loc[0], ', rank ', board[index].loc[1]
@@ -200,6 +218,8 @@ def Move(s):
     # I still do not have a good way around converting file and rank to square index...
     #
 
+    global nBackups
+
     tour.append(LocToIdx(s.loc))    # tour[] is a growing list of board square indices (integers)
     s.value = True                  # now that we're here let's mark this square 'visited'
 
@@ -227,17 +247,20 @@ def Move(s):
         #       Then it is time to press on with the ordinal loop
 
     # Now at this point we have fallen out of the ordinal loop so we had better back up
+    nBackups += 1
     tour.pop()
     s.value = False
     return
 
 # This is the same code as Move() reduced to a minimal number of lines
 def MoveMinimalist(s):
+    global nBackups
     tour.append(LocToIdx(s.loc))    # tour[] is a growing list of board square indices (integers)
     s.value = True                  # now that we're here let's mark this square 'visited'
     if len(tour) == nRanks * nFiles: PrintTour()
     for ordinal in s.order: 
         if board[LocToIdx(s.destinations[ordinal])].value == False: MoveMinimalist(board[LocToIdx(s.destinations[ordinal])])
+    nBackups += 1
     tour.pop()
     s.value = False
 
