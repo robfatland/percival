@@ -1,7 +1,0 @@
-#!C:\Users\fatla_000\Documents\Visual Studio 2013\Projects\percival\rob5araldif\env\Scripts\python.exe
-
-import warnings
-warnings.simplefilter('default', DeprecationWarning)
-
-from logilab.common.pytest import run
-run()
